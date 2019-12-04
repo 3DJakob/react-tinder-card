@@ -17,7 +17,9 @@ npm install --save react-tinder-card
 
 ## Usage
 
-Import TinderCard and use the component like the snippet. Note that the component will not remove itself after swipe. If you want that behaviour implement that on the `onSwipe` callback. It is recommended to have `overflow: hidden` on your `#root` to prevent cards from being visible after they go of screen.
+Import TinderCard and use the component like the snippet. Note that the component will not remove itself after swipe. If you want that behaviour implement that on the `onCardLeftScreen` callback. It is recommended to have `overflow: hidden` on your `#root` to prevent cards from being visible after they go of screen.
+
+If you want more usage help check out the demo repository code [here.](https://github.com/3DJakob/react-tinder-card-demo/blob/master/src/App.js)
 
 ```js
 import TinderCard from 'react-tinder-card'
