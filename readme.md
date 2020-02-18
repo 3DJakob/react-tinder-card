@@ -35,7 +35,7 @@ const onCardLeftScreen = (myIdentifier) => {
 }
 
 return (
-  <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')}>Hello, World!</TinderCard>
+  <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['right', 'left']}>Hello, World!</TinderCard>
 )
 ```
 
@@ -62,3 +62,10 @@ Callback that will be executed when a swipe has been completed. It will be calle
 - type: `SwipeHandler`
 
 Callback that will be executed when a `TinderCard` has left the screen.
+
+### `preventSwipe`
+
+- optional
+- type: `String Array`
+
+An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
