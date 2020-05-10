@@ -17,6 +17,11 @@ declare interface Props {
   onSwipe: SwipeHandler
 
   /**
+   * Callback that will be executed when a card has left the screen
+   */
+  onCardLeftScreen?: () => void
+
+  /**
    * An array of directions for which to prevent swiping out of screen. Valid arguments are 'left', 'right', 'up' and 'down'.
    *
    * @default []
