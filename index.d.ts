@@ -2,27 +2,28 @@ import React from 'react'
 
 declare type Direction = 'left' | 'right' | 'up' | 'down'
 declare type SwipeHandler = (direction: Direction) => void
+declare type CardLeftScreenHandler = () => void
 
 declare interface Props {
   /**
-   * Whether or not to let the element be flicked away off-screen after a swipe
+   * Whether or not to let the element be flicked away off-screen after a swipe.
    *
    * @default true
    */
   flickOnSwipe?: boolean
 
   /**
-   * Callback that will be executed when a swipe has been completed
+   * Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
    */
   onSwipe: SwipeHandler
 
   /**
-   * Callback that will be executed when a card has left the screen
+   * Callback that will be executed when a `TinderCard` has left the screen.
    */
-  onCardLeftScreen?: () => void
+  onCardLeftScreen?: CardLeftScreenHandler
 
   /**
-   * An array of directions for which to prevent swiping out of screen. Valid arguments are 'left', 'right', 'up' and 'down'.
+   * An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
    *
    * @default []
    */

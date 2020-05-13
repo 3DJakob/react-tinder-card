@@ -39,7 +39,7 @@ return (
 )
 ```
 
-## Options
+## Props
 
 ### `flickOnSwipe`
 
@@ -47,25 +47,26 @@ return (
 - type: `boolean`
 - default: `true`
 
-Whether or not to let the element be flicked away off-screen after a swipe
+Whether or not to let the element be flicked away off-screen after a swipe.
 
 ### `onSwipe`
 
-- requried
+- required
 - type: `SwipeHandler`
 
-Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`
+Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
 
 ### `onCardLeftScreen`
 
 - optional
-- type: `SwipeHandler`
+- type: `CardLeftScreenHandler`
 
 Callback that will be executed when a `TinderCard` has left the screen.
 
 ### `preventSwipe`
 
 - optional
-- type: `String Array`
+- type: `Array<string>`
+- default: `[]`
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
