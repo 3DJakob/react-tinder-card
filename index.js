@@ -115,33 +115,34 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-let swipeAlreadyReleased = false
-
 const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }) => {
-  const handleSwipeReleased = async (element, speed) => {
-    if (swipeAlreadyReleased) { return }
-    swipeAlreadyReleased = true
-    if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) { // Swipe recognized
+  const swipeAlreadyReleased = React.useRef(false)
+
+  const handleSwipeReleased = React.useCallback(async (element, speed) => {
+    if (swipeAlreadyReleased.current) { return }
+    swipeAlreadyReleased.current = true
+
+    // Check if this is a swipe
+    if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) {
       onSwipe(getSwipeDirection(speed))
+
       if (flickOnSwipe) {
-        if (preventSwipe.includes(getSwipeDirection(speed))) {
-          animateBack(element)
-        } else {
+        if (!preventSwipe.includes(getSwipeDirection(speed))) {
           await animateOut(element, speed)
           element.style.display = 'none'
           onCardLeftScreen()
+          return
         }
-      } else {
-        animateBack(element)
       }
-    } else {
-      animateBack(element)
     }
-  }
 
-  const handleSwipeStart = () => {
-    swipeAlreadyReleased = false
-  }
+    // Card was not flicked away, animate back to start
+    animateBack(element)
+  }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
+
+  const handleSwipeStart = React.useCallback(() => {
+    swipeAlreadyReleased.current = false
+  }, [swipeAlreadyReleased])
 
   const ref = React.useCallback((element) => {
     if (!element) { return } // necesarry?
@@ -199,7 +200,7 @@ const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, 
         handleSwipeReleased(element, speed)
       }
     })
-  })
+  }, [handleSwipeReleased, handleSwipeStart])
 
   return (
     React.createElement('div', { ref, className }, children)
