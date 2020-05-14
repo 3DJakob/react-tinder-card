@@ -121,22 +121,23 @@ const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, 
   const handleSwipeReleased = React.useCallback(async (element, speed) => {
     if (swipeAlreadyReleased.current) { return }
     swipeAlreadyReleased.current = true
-    if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) { // Swipe recognized
+
+    // Check if this is a swipe
+    if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) {
       onSwipe(getSwipeDirection(speed))
+
       if (flickOnSwipe) {
-        if (preventSwipe.includes(getSwipeDirection(speed))) {
-          animateBack(element)
-        } else {
+        if (!preventSwipe.includes(getSwipeDirection(speed))) {
           await animateOut(element, speed)
           element.style.display = 'none'
           onCardLeftScreen()
+          return
         }
-      } else {
-        animateBack(element)
       }
-    } else {
-      animateBack(element)
     }
+
+    // Card was not flicked away, animate back to start
+    animateBack(element)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
