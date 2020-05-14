@@ -115,12 +115,12 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-let swipeAlreadyReleased = false
-
 const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }) => {
+  const swipeAlreadyReleased = React.useRef(false)
+
   const handleSwipeReleased = async (element, speed) => {
-    if (swipeAlreadyReleased) { return }
-    swipeAlreadyReleased = true
+    if (swipeAlreadyReleased.current) { return }
+    swipeAlreadyReleased.current = true
     if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) { // Swipe recognized
       onSwipe(getSwipeDirection(speed))
       if (flickOnSwipe) {
@@ -140,7 +140,7 @@ const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, 
   }
 
   const handleSwipeStart = () => {
-    swipeAlreadyReleased = false
+    swipeAlreadyReleased.current = false
   }
 
   const ref = React.useCallback((element) => {
