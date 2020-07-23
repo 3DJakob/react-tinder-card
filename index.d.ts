@@ -2,7 +2,7 @@ import React from 'react'
 
 declare type Direction = 'left' | 'right' | 'up' | 'down'
 declare type SwipeHandler = (direction: Direction) => void
-declare type CardLeftScreenHandler = () => void
+declare type CardLeftScreenHandler = (direction: Direction) => void
 
 declare interface Props {
   /**
@@ -15,10 +15,10 @@ declare interface Props {
   /**
    * Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
    */
-  onSwipe: SwipeHandler
+  onSwipe?: SwipeHandler
 
   /**
-   * Callback that will be executed when a `TinderCard` has left the screen.
+   * Callback that will be executed when a `TinderCard` has left the screen. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
    */
   onCardLeftScreen?: CardLeftScreenHandler
 
