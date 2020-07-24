@@ -124,13 +124,15 @@ const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, 
 
     // Check if this is a swipe
     if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) {
-      onSwipe(getSwipeDirection(speed))
+      const dir = getSwipeDirection(speed)
+
+      if (onSwipe) onSwipe(dir)
 
       if (flickOnSwipe) {
-        if (!preventSwipe.includes(getSwipeDirection(speed))) {
+        if (!preventSwipe.includes(dir)) {
           await animateOut(element, speed)
           element.style.display = 'none'
-          onCardLeftScreen()
+          if (onCardLeftScreen) onCardLeftScreen(dir)
           return
         }
       }

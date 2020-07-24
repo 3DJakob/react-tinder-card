@@ -51,7 +51,7 @@ Whether or not to let the element be flicked away off-screen after a swipe.
 
 ### `onSwipe`
 
-- required
+- optional
 - type: `SwipeHandler`
 
 Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
@@ -61,7 +61,7 @@ Callback that will be executed when a swipe has been completed. It will be calle
 - optional
 - type: `CardLeftScreenHandler`
 
-Callback that will be executed when a `TinderCard` has left the screen.
+Callback that will be executed when a `TinderCard` has left the screen. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
 
 ### `preventSwipe`
 
