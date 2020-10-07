@@ -70,3 +70,12 @@ Callback that will be executed when a `TinderCard` has left the screen. It will 
 - default: `[]`
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
+
+## API
+
+### `swipe(dir)`
+
+- `dir` (`Direction`, required) - The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
+- returns `Promise<void>`
+
+Programmatically trigger a swipe of the card.
