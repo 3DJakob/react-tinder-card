@@ -23,7 +23,7 @@ const pythagoras = (x, y) => {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 }
 
-const animateOut = async (element, speed) => {
+const animateOut = async (element, speed, easeIn = false) => {
   const startPos = getTranslate(element)
   const bodySize = getElementSize(document.body)
   const diagonal = pythagoras(bodySize.x, bodySize.y)
@@ -33,9 +33,24 @@ const animateOut = async (element, speed) => {
   const multiplier = diagonal / velocity
 
   const translateString = translationString(speed.x * multiplier + startPos.x, -speed.y * multiplier + startPos.y)
-  const rotateString = rotationString(getRotation(element))
+  let rotateString = ''
 
-  element.style.transition = 'ease-out ' + time + 's'
+  const rotationPower = 200
+
+  if (easeIn) {
+    element.style.transition = 'ease ' + time + 's'
+  } else {
+    element.style.transition = 'ease-out ' + time + 's'
+  }
+
+  if (getRotation(element) === 0) {
+    rotateString = rotationString((Math.random() - 0.5) * rotationPower)
+  } else if (getRotation(element) > 0) {
+    rotateString = rotationString((Math.random()) * rotationPower / 2 + getRotation(element))
+  } else {
+    rotateString = rotationString((Math.random() - 1) * rotationPower / 2 + getRotation(element))
+  }
+
   element.style.transform = translateString + rotateString
 
   await sleep(time * 1000)
@@ -115,8 +130,29 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
+
+  const element = React.useRef()
+
+  React.useImperativeHandle(ref, () => ({
+    async swipe (dir = 'right') {
+      if (onSwipe) onSwipe(dir)
+      const power = 1000
+      const disturbance = (Math.random() - 0.5) * 100
+      if (dir === 'right') {
+        await animateOut(element.current, { x: power, y: disturbance }, true)
+      } else if (dir === 'left') {
+        await animateOut(element.current, { x: -power, y: disturbance }, true)
+      } else if (dir === 'up') {
+        await animateOut(element.current, { x: disturbance, y: power }, true)
+      } else if (dir === 'down') {
+        await animateOut(element.current, { x: disturbance, y: -power }, true)
+      }
+      element.current.style.display = 'none'
+      if (onCardLeftScreen) onCardLeftScreen(dir)
+    }
+  }))
 
   const handleSwipeReleased = React.useCallback(async (element, speed) => {
     if (swipeAlreadyReleased.current) { return }
@@ -146,67 +182,66 @@ const TinderCard = ({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, 
     swipeAlreadyReleased.current = false
   }, [swipeAlreadyReleased])
 
-  const ref = React.useCallback((element) => {
-    if (!element) { return } // necesarry?
+  React.useLayoutEffect(() => {
     let offset = { x: null, y: null }
     let speed = { x: 0, y: 0 }
     let lastLocation = { x: 0, y: 0, time: new Date().getTime() }
     let mouseIsClicked = false
 
-    element.addEventListener(('touchstart'), (ev) => {
+    element.current.addEventListener(('touchstart'), (ev) => {
       ev.preventDefault()
       handleSwipeStart()
       offset = { x: -touchCoordinatesFromEvent(ev).x, y: -touchCoordinatesFromEvent(ev).y }
     })
 
-    element.addEventListener(('mousedown'), (ev) => {
+    element.current.addEventListener(('mousedown'), (ev) => {
       ev.preventDefault()
       mouseIsClicked = true
       handleSwipeStart()
       offset = { x: -mouseCoordinatesFromEvent(ev).x, y: -mouseCoordinatesFromEvent(ev).y }
     })
 
-    element.addEventListener(('touchmove'), (ev) => {
+    element.current.addEventListener(('touchmove'), (ev) => {
       ev.preventDefault()
-      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element, offset, lastLocation)
+      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
     })
 
-    element.addEventListener(('mousemove'), (ev) => {
+    element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
-        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element, offset, lastLocation)
+        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element.current, offset, lastLocation)
         speed = calcSpeed(lastLocation, newLocation)
         lastLocation = newLocation
       }
     })
 
-    element.addEventListener(('touchend'), (ev) => {
+    element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
-      handleSwipeReleased(element, speed)
+      handleSwipeReleased(element.current, speed)
     })
 
-    element.addEventListener(('mouseup'), (ev) => {
+    element.current.addEventListener(('mouseup'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(element, speed)
+        handleSwipeReleased(element.current, speed)
       }
     })
 
-    element.addEventListener(('mouseleave'), (ev) => {
+    element.current.addEventListener(('mouseleave'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(element, speed)
+        handleSwipeReleased(element.current, speed)
       }
     })
-  }, [handleSwipeReleased, handleSwipeStart])
+  }, [])
 
   return (
-    React.createElement('div', { ref, className }, children)
+    React.createElement('div', { ref: element, className }, children)
   )
-}
+})
 
 module.exports = TinderCard
