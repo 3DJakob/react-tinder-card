@@ -4,7 +4,18 @@ declare type Direction = 'left' | 'right' | 'up' | 'down'
 declare type SwipeHandler = (direction: Direction) => void
 declare type CardLeftScreenHandler = (direction: Direction) => void
 
+declare interface API {
+  /**
+   * Programmatically trigger a swipe of the card.
+   *
+   * @param dir The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
+   */
+  swipe (dir: Direction): Promise<void>
+}
+
 declare interface Props {
+  ref?: React.Ref<API>
+
   /**
    * Whether or not to let the element be flicked away off-screen after a swipe.
    *
