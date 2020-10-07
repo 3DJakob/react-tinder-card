@@ -133,7 +133,7 @@ const mouseCoordinatesFromEvent = (e) => {
 const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, perentRef) => {
   const swipeAlreadyReleased = React.useRef(false)
 
-  let elementGlobal
+  const element = React.useRef()
 
   React.useImperativeHandle(perentRef, () => ({
     async swipe (dir = 'right') {
@@ -141,15 +141,15 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       const power = 1000
       const disturbance = (Math.random() - 0.5) * 100
       if (dir === 'right') {
-        await animateOut(elementGlobal, { x: power, y: disturbance }, true)
+        await animateOut(element.current, { x: power, y: disturbance }, true)
       } else if (dir === 'left') {
-        await animateOut(elementGlobal, { x: -power, y: disturbance }, true)
+        await animateOut(element.current, { x: -power, y: disturbance }, true)
       } else if (dir === 'up') {
-        await animateOut(elementGlobal, { x: disturbance, y: power }, true)
+        await animateOut(element.current, { x: disturbance, y: power }, true)
       } else if (dir === 'down') {
-        await animateOut(elementGlobal, { x: disturbance, y: -power }, true)
+        await animateOut(element.current, { x: disturbance, y: -power }, true)
       }
-      elementGlobal.style.display = 'none'
+      element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
     }
   }))
@@ -182,67 +182,65 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     swipeAlreadyReleased.current = false
   }, [swipeAlreadyReleased])
 
-  const ref = React.useCallback((element) => {
-    if (!element) { return } // necesarry?
-    elementGlobal = element
+  React.useLayoutEffect(() => {
     let offset = { x: null, y: null }
     let speed = { x: 0, y: 0 }
     let lastLocation = { x: 0, y: 0, time: new Date().getTime() }
     let mouseIsClicked = false
 
-    element.addEventListener(('touchstart'), (ev) => {
+    element.current.addEventListener(('touchstart'), (ev) => {
       ev.preventDefault()
       handleSwipeStart()
       offset = { x: -touchCoordinatesFromEvent(ev).x, y: -touchCoordinatesFromEvent(ev).y }
     })
 
-    element.addEventListener(('mousedown'), (ev) => {
+    element.current.addEventListener(('mousedown'), (ev) => {
       ev.preventDefault()
       mouseIsClicked = true
       handleSwipeStart()
       offset = { x: -mouseCoordinatesFromEvent(ev).x, y: -mouseCoordinatesFromEvent(ev).y }
     })
 
-    element.addEventListener(('touchmove'), (ev) => {
+    element.current.addEventListener(('touchmove'), (ev) => {
       ev.preventDefault()
-      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element, offset, lastLocation)
+      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
     })
 
-    element.addEventListener(('mousemove'), (ev) => {
+    element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
-        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element, offset, lastLocation)
+        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element.current, offset, lastLocation)
         speed = calcSpeed(lastLocation, newLocation)
         lastLocation = newLocation
       }
     })
 
-    element.addEventListener(('touchend'), (ev) => {
+    element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
-      handleSwipeReleased(element, speed)
+      handleSwipeReleased(element.current, speed)
     })
 
-    element.addEventListener(('mouseup'), (ev) => {
+    element.current.addEventListener(('mouseup'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(element, speed)
+        handleSwipeReleased(element.current, speed)
       }
     })
 
-    element.addEventListener(('mouseleave'), (ev) => {
+    element.current.addEventListener(('mouseleave'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(element, speed)
+        handleSwipeReleased(element.current, speed)
       }
     })
-  }, [handleSwipeReleased, handleSwipeStart])
+  }, [])
 
   return (
-    React.createElement('div', { ref, className }, children)
+    React.createElement('div', { ref: element, className }, children)
   )
 })
 
