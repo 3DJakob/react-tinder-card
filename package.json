@@ -1,6 +1,6 @@
 {
   "name": "react-tinder-card",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "A npm react module for making react elements swipeable like in the dating app tinder.",
   "repository": "3DJakob/react-tinder-card",
   "license": "MIT",
