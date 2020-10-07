@@ -130,12 +130,12 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, perentRef) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
 
   const element = React.useRef()
 
-  React.useImperativeHandle(perentRef, () => ({
+  React.useImperativeHandle(ref, () => ({
     async swipe (dir = 'right') {
       if (onSwipe) onSwipe(dir)
       const power = 1000
