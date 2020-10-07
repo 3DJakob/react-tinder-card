@@ -19,8 +19,6 @@ npm install --save react-tinder-card
 
 Import TinderCard and use the component like the snippet. Note that the component will not remove itself after swipe. If you want that behaviour implement that on the `onCardLeftScreen` callback. It is recommended to have `overflow: hidden` on your `#root` to prevent cards from being visible after they go of screen.
 
-If you want more usage help check out the demo repository code [here.](https://github.com/3DJakob/react-tinder-card-demo/blob/master/src/App.js)
-
 ```js
 import TinderCard from 'react-tinder-card'
 
@@ -38,6 +36,14 @@ return (
   <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['right', 'left']}>Hello, World!</TinderCard>
 )
 ```
+
+If you want more usage help check out the demo repository code [here.](https://github.com/3DJakob/react-tinder-card-demo/tree/master/src/examples)
+
+The simple example is the minimum code needed to get you started.
+
+The advanced example implements a state to dynamically remove swiped elements as well as using buttons to trigger swipes.
+
+Both code examples can be tested on the [demo page.](https://3djakob.github.io/react-tinder-card-demo/)
 
 ## Props
 
@@ -73,9 +79,9 @@ An array of directions for which to prevent swiping out of screen. Valid argumen
 
 ## API
 
-### `swipe(dir)`
+### `swipe([dir])`
 
-- `dir` (`Direction`, required) - The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
+- `dir` (`Direction`, optional) - The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
 - returns `Promise<void>`
 
-Programmatically trigger a swipe of the card.
+Programmatically trigger a swipe of the card in one of the valid directions `'left'`, `'right'`, `'up'` and `'down'`. This function, `swipe`, can be called on a reference of the TinderCard instance. Check the [example](https://github.com/3DJakob/react-tinder-card-demo/blob/master/src/examples/Advanced.js) code for more details on how to use this.

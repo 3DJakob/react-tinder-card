@@ -6,11 +6,11 @@ declare type CardLeftScreenHandler = (direction: Direction) => void
 
 declare interface API {
   /**
-   * Programmatically trigger a swipe of the card.
+   * Programmatically trigger a swipe of the card in one of the valid directions `'left'`, `'right'`, `'up'` and `'down'`. This function, `swipe`, can be called on a reference of the TinderCard instance. Check the [example](https://github.com/3DJakob/react-tinder-card-demo/blob/master/src/examples/Advanced.js) code for more details on how to use this.
    *
    * @param dir The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
    */
-  swipe (dir: Direction): Promise<void>
+  swipe (dir?: Direction): Promise<void>
 }
 
 declare interface Props {
