@@ -38,7 +38,7 @@ declare interface Props {
    *
    * @default []
    */
-  preventSwipe?: string[]
+  preventSwipe?: ('left' | 'right' | 'up' | 'down')[]
 }
 
 declare const TinderCard: React.FC<Props>
