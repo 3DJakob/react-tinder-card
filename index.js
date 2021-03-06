@@ -140,11 +140,11 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       if (onSwipe) onSwipe(dir)
       const power = 1000
       const disturbance = (Math.random() - 0.5) * 100
-      if (dir === "back") {
-        element.current.style.display = null;
-        return animateBack(element.current); // note: SHORT CIRCUIT
+      if (dir === 'back') {
+        element.current.style.display = null
+        return animateBack(element.current) // note: SHORT CIRCUIT
       }
-    if (dir === 'right') {
+      if (dir === 'right') {
         await animateOut(element.current, { x: power, y: disturbance }, true)
       } else if (dir === 'left') {
         await animateOut(element.current, { x: -power, y: disturbance }, true)
@@ -173,7 +173,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
           await animateOut(element, speed)
           element.style.display = 'none'
           if (onCardLeftScreen) onCardLeftScreen(dir)
-          return; //note: SHORT-CIRCUIT
+          return // note: SHORT-CIRCUIT
         }
       }
     }
@@ -241,7 +241,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         handleSwipeReleased(element.current, speed)
       }
     })
-  }, [handleSwipeReleased, handleSwipeStart]);//dependencies
+  }, [handleSwipeReleased, handleSwipeStart]) // dependencies
 
   return (
     React.createElement('div', { ref: element, className }, children)
