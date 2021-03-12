@@ -152,7 +152,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
     },
-    restoreCard() {
+    restoreCard () {
       element.current.style.display = 'block'
       animateBack(element.current)
     }
