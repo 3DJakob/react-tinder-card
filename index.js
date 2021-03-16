@@ -111,12 +111,15 @@ const getRotation = (element) => {
   return ans
 }
 
-const dragableTouchmove = (coordinates, element, offset, lastLocation) => {
+const dragableTouchmove = (coordinates, element, offset, lastLocation, disableCardRotation) => {
   const pos = { x: coordinates.x + offset.x, y: coordinates.y + offset.y }
   const newLocation = { x: pos.x, y: pos.y, time: new Date().getTime() }
   const translation = translationString(pos.x, pos.y)
-  const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
-  const rotation = rotationString(rotCalc * settings.maxTilt)
+  let rotation = ''
+  if (!disableCardRotation) {
+    const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
+    rotation = rotationString(rotCalc * settings.maxTilt)
+  }
   element.style.transform = translation + rotation
   return newLocation
 }
@@ -130,7 +133,18 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, ref) => {
+const TinderCard = React.forwardRef((
+  {
+    flickOnSwipe = true,
+    children,
+    onSwipe,
+    onCardLeftScreen,
+    className,
+    preventSwipe = [],
+    disableCardRotation = false
+  },
+  ref
+) => {
   const swipeAlreadyReleased = React.useRef(false)
 
   const element = React.useRef()
@@ -207,7 +221,13 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
 
     element.current.addEventListener(('touchmove'), (ev) => {
       ev.preventDefault()
-      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
+      const newLocation = dragableTouchmove(
+        touchCoordinatesFromEvent(ev),
+        element.current,
+        offset,
+        lastLocation,
+        disableCardRotation
+      )
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
     })
@@ -215,7 +235,13 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
-        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element.current, offset, lastLocation)
+        const newLocation = dragableTouchmove(
+          mouseCoordinatesFromEvent(ev),
+          element.current,
+          offset,
+          lastLocation,
+          disableCardRotation
+        )
         speed = calcSpeed(lastLocation, newLocation)
         lastLocation = newLocation
       }
