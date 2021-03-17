@@ -56,7 +56,7 @@ const animateOut = async (element, speed, easeIn = false) => {
   await sleep(time * 1000)
 }
 
-const animateBack = (element) => {
+const animateBack = (element, cardTransitionDuration) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(startingPoint.x * -settings.bouncePower, startingPoint.y * -settings.bouncePower)
@@ -68,7 +68,7 @@ const animateBack = (element) => {
   }, settings.snapBackDuration * 0.75)
 
   setTimeout(() => {
-    element.style.transition = '10ms'
+    element.style.transition = cardTransitionDuration
   }, settings.snapBackDuration)
 }
 
@@ -141,7 +141,8 @@ const TinderCard = React.forwardRef((
     onCardLeftScreen,
     className,
     preventSwipe = [],
-    disableCardRotation = false
+    disableCardRotation = false,
+    cardTransitionDuration = '10ms'
   },
   ref
 ) => {
@@ -168,7 +169,7 @@ const TinderCard = React.forwardRef((
     },
     restoreCard () {
       element.current.style.display = 'block'
-      animateBack(element.current)
+      animateBack(element.current, cardTransitionDuration)
     }
   }))
 
@@ -193,7 +194,7 @@ const TinderCard = React.forwardRef((
     }
 
     // Card was not flicked away, animate back to start
-    animateBack(element)
+    animateBack(element, cardTransitionDuration)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
