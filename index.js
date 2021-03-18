@@ -170,6 +170,12 @@ const TinderCard = React.forwardRef((
     restoreCard () {
       element.current.style.display = 'block'
       animateBack(element.current, cardTransitionDuration)
+    },
+    hideCard () {
+      element.current.style.display = 'none'
+      const bodySize = getElementSize(document.body)
+      element.current.style.transform = 'translate(' + bodySize.x + 'px, 0px)rotate(-30deg)'
+      element.current.style.transition = settings.snapBackDuration+'ms'
     }
   }))
 
