@@ -324,16 +324,17 @@ const TinderCard = React.forwardRef((
         speed = { x: 0, y: 0 }
       }
     })
+
+    if (startHidden) {
+      const hiddenSettings = getHiddenSettings()
+      element.current.style.display = hiddenSettings.display
+      element.current.style.transform = hiddenSettings.transform
+      element.current.style.transition = hiddenSettings.transition
+    }
   }, [])
 
-  const divProps = { ref: element, className }
-
-  if (startHidden) {
-    divProps.style = getHiddenSettings()
-  }
-
   return (
-    React.createElement('div', divProps, children)
+    React.createElement('div', { ref: element, className }, children)
   )
 })
 
