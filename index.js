@@ -19,11 +19,35 @@ const getElementSize = (element) => {
   return { x: width, y: height }
 }
 
+const getElementComputedStyle = (element) => {
+  const elementStyles = window.getComputedStyle(element)
+  const widthString = elementStyles.getPropertyValue('width')
+  const width = Number(widthString.split('px')[0])
+  const heightString = elementStyles.getPropertyValue('height')
+  const height = Number(heightString.split('px')[0])
+  const paddingTopString = elementStyles.getPropertyValue('padding-top')
+  const paddingTop = Number(paddingTopString.split('px')[0])
+  const paddingBottomString = elementStyles.getPropertyValue('padding-bottom')
+  const paddingBottom = Number(paddingBottomString.split('px')[0])
+  const paddingRightString = elementStyles.getPropertyValue('padding-right')
+  const paddingRight = Number(paddingRightString.split('px')[0])
+  const paddingLeftString = elementStyles.getPropertyValue('padding-left')
+  const paddingLeft = Number(paddingLeftString.split('px')[0])
+  return {
+    x: width,
+    y: height,
+    paddingTop,
+    paddingBottom,
+    paddingRight,
+    paddingLeft
+  }
+}
+
 const pythagoras = (x, y) => {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 }
 
-const animateOut = async (element, speed, easeIn = false) => {
+const animateOut = async (element, speed, easeIn = false, disableRotationOnSwipe = false) => {
   const startPos = getTranslate(element)
   const bodySize = getElementSize(document.body)
   const diagonal = pythagoras(bodySize.x, bodySize.y)
@@ -43,12 +67,14 @@ const animateOut = async (element, speed, easeIn = false) => {
     element.style.transition = 'ease-out ' + time + 's'
   }
 
-  if (getRotation(element) === 0) {
-    rotateString = rotationString((Math.random() - 0.5) * rotationPower)
-  } else if (getRotation(element) > 0) {
-    rotateString = rotationString((Math.random()) * rotationPower / 2 + getRotation(element))
-  } else {
-    rotateString = rotationString((Math.random() - 1) * rotationPower / 2 + getRotation(element))
+  if (!disableRotationOnSwipe) {
+    if (getRotation(element) === 0) {
+      rotateString = rotationString((Math.random() - 0.5) * rotationPower)
+    } else if (getRotation(element) > 0) {
+      rotateString = rotationString((Math.random()) * rotationPower / 2 + getRotation(element))
+    } else {
+      rotateString = rotationString((Math.random() - 1) * rotationPower / 2 + getRotation(element))
+    }
   }
 
   element.style.transform = translateString + rotateString
@@ -56,12 +82,16 @@ const animateOut = async (element, speed, easeIn = false) => {
   await sleep(time * 1000)
 }
 
-const animateBack = (element, cardTransitionDuration) => {
+const animateBack = (element, cardTransitionDuration, disableRotationOnSwipe) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(startingPoint.x * -settings.bouncePower, startingPoint.y * -settings.bouncePower)
-  const rotation = rotationString(getRotation(element) * -settings.bouncePower)
-  element.style.transform = translation + rotation
+  if (disableRotationOnSwipe) {
+    element.style.transform = translation
+  } else {
+    const rotation = rotationString(getRotation(element) * -settings.bouncePower)
+    element.style.transform = translation + rotation
+  }
 
   setTimeout(() => {
     element.style.transform = 'none'
@@ -133,6 +163,21 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
+const getHiddenSettings = (element) => {
+  const bodySize = getElementComputedStyle(document.body)
+
+  let elementSize = { x: 0, y: 0 }
+  if (element) {
+    elementSize = getElementSize(element)
+  }
+
+  return {
+    display: 'none',
+    transform: 'translate(' + (bodySize.x + bodySize.paddingRight + elementSize.x) + 'px, 0px)',
+    transition: settings.snapBackDuration + 'ms'
+  }
+}
+
 const TinderCard = React.forwardRef((
   {
     flickOnSwipe = true,
@@ -142,7 +187,9 @@ const TinderCard = React.forwardRef((
     className,
     preventSwipe = [],
     disableCardRotation = false,
-    cardTransitionDuration = '10ms'
+    cardTransitionDuration = '10ms',
+    startHidden = false,
+    disableRotationOnSwipe = false
   },
   ref
 ) => {
@@ -156,26 +203,26 @@ const TinderCard = React.forwardRef((
       const power = 1000
       const disturbance = (Math.random() - 0.5) * 100
       if (dir === 'right') {
-        await animateOut(element.current, { x: power, y: disturbance }, true)
+        await animateOut(element.current, { x: power, y: disturbance }, true, disableRotationOnSwipe)
       } else if (dir === 'left') {
-        await animateOut(element.current, { x: -power, y: disturbance }, true)
+        await animateOut(element.current, { x: -power, y: disturbance }, true, disableRotationOnSwipe)
       } else if (dir === 'up') {
-        await animateOut(element.current, { x: disturbance, y: power }, true)
+        await animateOut(element.current, { x: disturbance, y: power }, true, disableRotationOnSwipe)
       } else if (dir === 'down') {
-        await animateOut(element.current, { x: disturbance, y: -power }, true)
+        await animateOut(element.current, { x: disturbance, y: -power }, true, disableRotationOnSwipe)
       }
       element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
     },
     restoreCard () {
       element.current.style.display = 'block'
-      animateBack(element.current, cardTransitionDuration)
+      animateBack(element.current, cardTransitionDuration, disableRotationOnSwipe)
     },
     hideCard () {
-      element.current.style.display = 'none'
-      const bodySize = getElementSize(document.body)
-      element.current.style.transform = 'translate(' + bodySize.x + 'px, 0px)rotate(-30deg)'
-      element.current.style.transition = settings.snapBackDuration+'ms'
+      const hiddenSettings = getHiddenSettings()
+      element.current.style.display = hiddenSettings.display
+      element.current.style.transform = hiddenSettings.transform
+      element.current.style.transition = hiddenSettings.transition
     }
   }))
 
@@ -191,7 +238,7 @@ const TinderCard = React.forwardRef((
 
       if (flickOnSwipe) {
         if (!preventSwipe.includes(dir)) {
-          await animateOut(element, speed)
+          await animateOut(element, speed, undefined, disableRotationOnSwipe)
           element.style.display = 'none'
           if (onCardLeftScreen) onCardLeftScreen(dir)
           return
@@ -200,7 +247,7 @@ const TinderCard = React.forwardRef((
     }
 
     // Card was not flicked away, animate back to start
-    animateBack(element, cardTransitionDuration)
+    animateBack(element, cardTransitionDuration, disableRotationOnSwipe)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
@@ -279,8 +326,14 @@ const TinderCard = React.forwardRef((
     })
   }, [])
 
+  const divProps = { ref: element, className }
+
+  if (startHidden) {
+    divProps.style = getHiddenSettings()
+  }
+
   return (
-    React.createElement('div', { ref: element, className }, children)
+    React.createElement('div', divProps, children)
   )
 })
 
