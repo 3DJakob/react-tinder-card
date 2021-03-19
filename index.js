@@ -47,7 +47,7 @@ const pythagoras = (x, y) => {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 }
 
-const animateOut = async (element, speed, easeIn = false, disableRotationOnSwipe = false) => {
+const animateOut = async (element, speed, easeIn = false, disableRotationOnAnimateOutAndBack = false) => {
   const startPos = getTranslate(element)
   const bodySize = getElementSize(document.body)
   const diagonal = pythagoras(bodySize.x, bodySize.y)
@@ -67,7 +67,7 @@ const animateOut = async (element, speed, easeIn = false, disableRotationOnSwipe
     element.style.transition = 'ease-out ' + time + 's'
   }
 
-  if (!disableRotationOnSwipe) {
+  if (!disableRotationOnAnimateOutAndBack) {
     if (getRotation(element) === 0) {
       rotateString = rotationString((Math.random() - 0.5) * rotationPower)
     } else if (getRotation(element) > 0) {
@@ -82,11 +82,11 @@ const animateOut = async (element, speed, easeIn = false, disableRotationOnSwipe
   await sleep(time * 1000)
 }
 
-const animateBack = (element, cardTransitionDuration, disableRotationOnSwipe) => {
+const animateBack = (element, dragTransitionDuration, disableRotationOnAnimateOutAndBack) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(startingPoint.x * -settings.bouncePower, startingPoint.y * -settings.bouncePower)
-  if (disableRotationOnSwipe) {
+  if (disableRotationOnAnimateOutAndBack) {
     element.style.transform = translation
   } else {
     const rotation = rotationString(getRotation(element) * -settings.bouncePower)
@@ -98,7 +98,7 @@ const animateBack = (element, cardTransitionDuration, disableRotationOnSwipe) =>
   }, settings.snapBackDuration * 0.75)
 
   setTimeout(() => {
-    element.style.transition = cardTransitionDuration
+    element.style.transition = dragTransitionDuration
   }, settings.snapBackDuration)
 }
 
@@ -141,12 +141,12 @@ const getRotation = (element) => {
   return ans
 }
 
-const dragableTouchmove = (coordinates, element, offset, lastLocation, disableCardRotation) => {
+const dragableTouchmove = (coordinates, element, offset, lastLocation, disableDragRotation) => {
   const pos = { x: coordinates.x + offset.x, y: coordinates.y + offset.y }
   const newLocation = { x: pos.x, y: pos.y, time: new Date().getTime() }
   const translation = translationString(pos.x, pos.y)
   let rotation = ''
-  if (!disableCardRotation) {
+  if (!disableDragRotation) {
     const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
     rotation = rotationString(rotCalc * settings.maxTilt)
   }
@@ -186,10 +186,10 @@ const TinderCard = React.forwardRef((
     onCardLeftScreen,
     className,
     preventSwipe = [],
-    disableCardRotation = false,
-    cardTransitionDuration = '10ms',
-    startHidden = false,
-    disableRotationOnSwipe = false
+    disableDragRotation,
+    dragTransitionDuration = '10ms',
+    hidden,
+    disableRotationOnAnimateOutAndBack
   },
   ref
 ) => {
@@ -203,20 +203,20 @@ const TinderCard = React.forwardRef((
       const power = 1000
       const disturbance = (Math.random() - 0.5) * 100
       if (dir === 'right') {
-        await animateOut(element.current, { x: power, y: disturbance }, true, disableRotationOnSwipe)
+        await animateOut(element.current, { x: power, y: disturbance }, true, disableRotationOnAnimateOutAndBack)
       } else if (dir === 'left') {
-        await animateOut(element.current, { x: -power, y: disturbance }, true, disableRotationOnSwipe)
+        await animateOut(element.current, { x: -power, y: disturbance }, true, disableRotationOnAnimateOutAndBack)
       } else if (dir === 'up') {
-        await animateOut(element.current, { x: disturbance, y: power }, true, disableRotationOnSwipe)
+        await animateOut(element.current, { x: disturbance, y: power }, true, disableRotationOnAnimateOutAndBack)
       } else if (dir === 'down') {
-        await animateOut(element.current, { x: disturbance, y: -power }, true, disableRotationOnSwipe)
+        await animateOut(element.current, { x: disturbance, y: -power }, true, disableRotationOnAnimateOutAndBack)
       }
       element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
     },
     restoreCard () {
       element.current.style.display = 'block'
-      animateBack(element.current, cardTransitionDuration, disableRotationOnSwipe)
+      animateBack(element.current, dragTransitionDuration, disableRotationOnAnimateOutAndBack)
     },
     hideCard () {
       const hiddenSettings = getHiddenSettings()
@@ -238,7 +238,7 @@ const TinderCard = React.forwardRef((
 
       if (flickOnSwipe) {
         if (!preventSwipe.includes(dir)) {
-          await animateOut(element, speed, undefined, disableRotationOnSwipe)
+          await animateOut(element, speed, undefined, disableRotationOnAnimateOutAndBack)
           element.style.display = 'none'
           if (onCardLeftScreen) onCardLeftScreen(dir)
           return
@@ -247,7 +247,7 @@ const TinderCard = React.forwardRef((
     }
 
     // Card was not flicked away, animate back to start
-    animateBack(element, cardTransitionDuration, disableRotationOnSwipe)
+    animateBack(element, dragTransitionDuration, disableRotationOnAnimateOutAndBack)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
@@ -280,7 +280,7 @@ const TinderCard = React.forwardRef((
         element.current,
         offset,
         lastLocation,
-        disableCardRotation
+        disableDragRotation
       )
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
@@ -294,7 +294,7 @@ const TinderCard = React.forwardRef((
           element.current,
           offset,
           lastLocation,
-          disableCardRotation
+          disableDragRotation
         )
         speed = calcSpeed(lastLocation, newLocation)
         lastLocation = newLocation
@@ -325,7 +325,7 @@ const TinderCard = React.forwardRef((
       }
     })
 
-    if (startHidden) {
+    if (hidden) {
       const hiddenSettings = getHiddenSettings()
       element.current.style.display = hiddenSettings.display
       element.current.style.transform = hiddenSettings.transform
