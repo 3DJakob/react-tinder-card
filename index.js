@@ -7,7 +7,6 @@ const settings = {
   snapBackDuration: 300,
   defaultAnimateOutDuration: 100,
   maxTilt: 5,
-  bouncePower: 0.2,
   swipeThreshold: 300, // px/s
   swipeByPositionTreshold: 25 // body %
 }
@@ -111,18 +110,18 @@ const animateOut = async (
   await sleep(time * 1000)
 }
 
-const animateBack = (element, dragTransitionDuration, disableRotationOnAnimateOutAndBack) => {
+const animateBack = (element, dragTransitionDuration, disableRotationOnAnimateOutAndBack, bouncePower) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(
-    startingPoint.x * -settings.bouncePower,
-    startingPoint.y * -settings.bouncePower
+    startingPoint.x * -bouncePower,
+    startingPoint.y * -bouncePower
   )
 
   if (disableRotationOnAnimateOutAndBack) {
     element.style.transform = translation
   } else {
-    const rotation = rotationString(getRotation(element) * -settings.bouncePower)
+    const rotation = rotationString(getRotation(element) * -bouncePower)
     element.style.transform = translation + rotation
   }
 
@@ -287,7 +286,8 @@ const TinderCard = React.forwardRef((
     hidden,
     disableRotationOnAnimateOutAndBack,
     swipeBySpeed = true,
-    swipeByPosition
+    swipeByPosition,
+    bouncePower = 0.2
   },
   ref
 ) => {
@@ -337,7 +337,8 @@ const TinderCard = React.forwardRef((
       animateBack(
         element.current,
         dragTransitionDuration,
-        disableRotationOnAnimateOutAndBack
+        disableRotationOnAnimateOutAndBack,
+        bouncePower
       )
     },
     hideCard () {
@@ -394,7 +395,7 @@ const TinderCard = React.forwardRef((
     }
 
     // Card was not flicked away, animate back to start
-    animateBack(element, dragTransitionDuration, disableRotationOnAnimateOutAndBack)
+    animateBack(element, dragTransitionDuration, disableRotationOnAnimateOutAndBack, bouncePower)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
