@@ -8,7 +8,6 @@ const settings = {
   defaultAnimateOutDuration: 100,
   maxTilt: 5,
   swipeThreshold: 300, // px/s
-  swipeByPositionTreshold: 25 // body %
 }
 
 const getElementSize = (element) => {
@@ -245,11 +244,11 @@ const isSwipedByAbsolutePosition = (currentPosition) => {
   drag is considered swipe if the delta is more
   than settings.swipeByPositionTreshold % of the screen (e.g. 25% of the screen)
 */
-const getSwipeDirectionByPosition = (currentPosition, initialPosition) => {
+const getSwipeDirectionByPosition = (currentPosition, initialPosition, swipeByPositionTreshold) => {
   const bodySize = getElementComputedStyle(document.body)
 
-  const tresholdX = parseInt(bodySize.x * settings.swipeByPositionTreshold * 0.01)
-  const tresholdY = parseInt(bodySize.y * settings.swipeByPositionTreshold * 0.01)
+  const tresholdX = parseInt(bodySize.x * swipeByPositionTreshold * 0.01)
+  const tresholdY = parseInt(bodySize.y * swipeByPositionTreshold * 0.01)
 
   // deltaX > 0 moved left, deltaX < 0 moved right
   const deltaX = initialPosition.x - currentPosition.x
@@ -289,7 +288,8 @@ const TinderCard = React.forwardRef((
     disableRotationOnAnimateOutAndBack,
     swipeBySpeed = true,
     swipeByPosition,
-    bouncePower = 0.2
+    bouncePower = 0.2,
+    swipeByPositionTreshold = 25 // body width %
   },
   ref
 ) => {
@@ -370,7 +370,11 @@ const TinderCard = React.forwardRef((
     // Check if this is a swipe by position
     let positionSwipeDir = ''
     if (swipeByPosition) {
-      positionSwipeDir = getSwipeDirectionByPosition(currentPosition, initialPosition)
+      positionSwipeDir = getSwipeDirectionByPosition(
+        currentPosition,
+        initialPosition,
+        swipeByPositionTreshold
+      )
     }
     const swipedByPosition = swipeByPosition && !!positionSwipeDir
 
