@@ -208,7 +208,9 @@ const getHiddenSettings = (element) => {
     display: 'none',
     transform: 'translate(' +
       (bodySize.x + bodySize.paddingRight + elementSize.x) + 'px, 0px)',
-    transition: settings.snapBackDuration + 'ms'
+    transition: 'none'
+    // if swiped to left will create unwanted bouncing effect
+    // transition: settings.snapBackDuration + 'ms',
   }
 }
 /*
