@@ -7,7 +7,7 @@ const settings = {
   snapBackDuration: 300,
   defaultAnimateOutDuration: 100,
   maxTilt: 5,
-  swipeThreshold: 300, // px/s
+  swipeThreshold: 300 // px/s
 }
 
 const getElementSize = (element) => {
@@ -402,7 +402,25 @@ const TinderCard = React.forwardRef((
 
     // Card was not flicked away, animate back to start
     animateBack(element, dragTransitionDuration, disableRotationOnAnimateOutAndBack, bouncePower)
-  }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
+  }, [
+    swipeAlreadyReleased,
+    flickOnSwipe,
+    onSwipe,
+    onCardLeftScreen,
+    preventSwipe,
+    swipeByPositionThreshold,
+    swipeByPosition,
+    swipeBySpeed,
+    disableRotationOnAnimateOutAndBack,
+    dragTransitionDuration,
+    bouncePower
+  ])
+
+  const handleSwipeReleasedRef = React.useRef(handleSwipeReleased)
+
+  React.useEffect(() => {
+    handleSwipeReleasedRef.current = handleSwipeReleased
+  }, [handleSwipeReleased])
 
   const handleSwipeStart = React.useCallback(() => {
     swipeAlreadyReleased.current = false
@@ -466,7 +484,8 @@ const TinderCard = React.forwardRef((
 
     element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
-      handleSwipeReleased(
+      // handleSwipeReleased(
+      handleSwipeReleasedRef.current(
         element.current,
         speed,
         touchCoordinatesFromEvent(ev),
@@ -481,7 +500,8 @@ const TinderCard = React.forwardRef((
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(
+        // handleSwipeReleased(
+        handleSwipeReleasedRef.current(
           element.current,
           speed,
           mouseCoordinatesFromEvent(ev),
@@ -497,7 +517,8 @@ const TinderCard = React.forwardRef((
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
-        handleSwipeReleased(
+        // handleSwipeReleased(
+        handleSwipeReleasedRef.current(
           element.current,
           speed,
           mouseCoordinatesFromEvent(ev),
