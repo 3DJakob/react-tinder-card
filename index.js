@@ -242,32 +242,32 @@ const isSwipedByAbsolutePosition = (currentPosition) => {
 
 /*
   drag is considered swipe if the delta is more
-  than settings.swipeByPositionTreshold % of the screen (e.g. 25% of the screen)
+  than settings.swipeByPositionThreshold % of the screen (e.g. 25% of the screen)
 */
-const getSwipeDirectionByPosition = (currentPosition, initialPosition, swipeByPositionTreshold) => {
+const getSwipeDirectionByPosition = (currentPosition, initialPosition, swipeByPositionThreshold) => {
   const bodySize = getElementComputedStyle(document.body)
 
-  const tresholdX = parseInt(bodySize.x * swipeByPositionTreshold * 0.01)
-  const tresholdY = parseInt(bodySize.y * swipeByPositionTreshold * 0.01)
+  const thresholdX = parseInt(bodySize.x * swipeByPositionThreshold * 0.01)
+  const thresholdY = parseInt(bodySize.y * swipeByPositionThreshold * 0.01)
 
   // deltaX > 0 moved left, deltaX < 0 moved right
   const deltaX = initialPosition.x - currentPosition.x
   // deltaY > 0 moved up, deltaX < 0 moved down
   const deltaY = initialPosition.y - currentPosition.y
 
-  if (deltaX > tresholdX) {
+  if (deltaX > thresholdX) {
     return 'left'
   }
 
-  if (deltaX < -tresholdX) {
+  if (deltaX < -thresholdX) {
     return 'right'
   }
 
-  if (deltaY > tresholdY) {
+  if (deltaY > thresholdY) {
     return 'up'
   }
 
-  if (deltaY < -tresholdY) {
+  if (deltaY < -thresholdY) {
     return 'down'
   }
 
@@ -289,7 +289,7 @@ const TinderCard = React.forwardRef((
     swipeBySpeed = true,
     swipeByPosition,
     bouncePower = 0.2,
-    swipeByPositionTreshold = 25 // body width %
+    swipeByPositionThreshold = 25 // body width %
   },
   ref
 ) => {
@@ -373,7 +373,7 @@ const TinderCard = React.forwardRef((
       positionSwipeDir = getSwipeDirectionByPosition(
         currentPosition,
         initialPosition,
-        swipeByPositionTreshold
+        swipeByPositionThreshold
       )
     }
     const swipedByPosition = swipeByPosition && !!positionSwipeDir
