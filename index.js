@@ -205,7 +205,7 @@ const getHiddenSettings = (element) => {
 
   return {
     display: 'none',
-    transform: 'translate(' +
+    transform: 'translate(-' +
       (bodySize.x + bodySize.paddingRight + elementSize.x) + 'px, 0px)',
     transition: 'none'
     // if swiped to left will create unwanted bouncing effect
