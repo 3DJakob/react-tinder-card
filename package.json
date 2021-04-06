@@ -6,7 +6,8 @@
   "license": "MIT",
   "files": [
     "index.d.ts",
-    "index.js"
+    "index.js",
+    "index.native.js"
   ],
   "scripts": {
     "test": "standard && ts-readme-generator --check"
@@ -26,6 +27,12 @@
   "keywords": [
     "tinder",
     "card",
+    "react-native",
+    "native",
+    "ios",
+    "android",
+    "web",
+    "react",
     "swipeable",
     "swipe",
     "physics",

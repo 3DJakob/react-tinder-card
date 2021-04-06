@@ -2,12 +2,20 @@
 
 A react component to make swipeable elements like in the app tinder.
 
+## Compatibility
+- React
+- React Native
+
+The import and api is identical for both Web and Native.
+
 ## Demo
 ![](tinder.gif)
 
 Try out the interactive demo <a href="https://3djakob.github.io/react-tinder-card-demo/">here.</a>
 
-Check out the demo repo <a href="https://github.com/3DJakob/react-tinder-card-demo">here.</a>
+Check out the Web demo repo <a href="https://github.com/3DJakob/react-tinder-card-demo">here.</a>
+
+Check out the Native demo repo <a href="https://github.com/3DJakob/react-native-tinder-card-demo">here.</a>
 
 ## Installation
 
@@ -37,13 +45,13 @@ return (
 )
 ```
 
-If you want more usage help check out the demo repository code [here.](https://github.com/3DJakob/react-tinder-card-demo/tree/master/src/examples)
+If you want more usage help check out the demo repository code: [Web](https://github.com/3DJakob/react-tinder-card-demo/tree/master/src/examples) / [Native](https://github.com/3DJakob/react-native-tinder-card-demo/tree/master/src/examples)
 
 The simple example is the minimum code needed to get you started.
 
 The advanced example implements a state to dynamically remove swiped elements as well as using buttons to trigger swipes.
 
-Both code examples can be tested on the [demo page.](https://3djakob.github.io/react-tinder-card-demo/)
+Both Web code examples can be tested on the [demo page.](https://3djakob.github.io/react-tinder-card-demo/) The Native code examples can be cloned and runned using `expo start`.
 
 ## Props
 
