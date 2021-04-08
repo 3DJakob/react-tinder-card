@@ -80,7 +80,7 @@ Callback that will be executed when a `TinderCard` has left the screen. It will 
 ### `preventSwipe`
 
 - optional
-- type: `Array<string>`
+- type: `Array<undefined>`
 - default: `[]`
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
