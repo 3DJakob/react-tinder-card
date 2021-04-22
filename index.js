@@ -289,7 +289,8 @@ const TinderCard = React.forwardRef((
     swipeBySpeed = true,
     swipeByPosition,
     bouncePower = 0.2,
-    swipeByPositionThreshold = 25 // body width %
+    swipeByPositionThreshold = 25, // body width %
+    mobileOnly = false
   },
   ref
 ) => {
@@ -434,7 +435,7 @@ const TinderCard = React.forwardRef((
     let mouseIsClicked = false
 
     element.current.addEventListener(('touchstart'), (ev) => {
-      ev.preventDefault()
+      !mobileOnly && ev.preventDefault()
       handleSwipeStart()
       offset = { x: -touchCoordinatesFromEvent(ev).x, y: -touchCoordinatesFromEvent(ev).y }
       if (swipeByPosition) {
@@ -443,7 +444,7 @@ const TinderCard = React.forwardRef((
       }
     })
 
-    element.current.addEventListener(('mousedown'), (ev) => {
+    !mobileOnly && element.current.addEventListener(('mousedown'), (ev) => {
       ev.preventDefault()
       mouseIsClicked = true
       handleSwipeStart()
@@ -455,7 +456,7 @@ const TinderCard = React.forwardRef((
     })
 
     element.current.addEventListener(('touchmove'), (ev) => {
-      ev.preventDefault()
+      !mobileOnly && ev.preventDefault()
       const newLocation = dragableTouchmove(
         touchCoordinatesFromEvent(ev),
         element.current,
@@ -467,7 +468,7 @@ const TinderCard = React.forwardRef((
       lastLocation = newLocation
     })
 
-    element.current.addEventListener(('mousemove'), (ev) => {
+    !mobileOnly && element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
         const newLocation = dragableTouchmove(
@@ -483,7 +484,7 @@ const TinderCard = React.forwardRef((
     })
 
     element.current.addEventListener(('touchend'), (ev) => {
-      ev.preventDefault()
+      !mobileOnly && ev.preventDefault()
       // handleSwipeReleased(
       handleSwipeReleasedRef.current(
         element.current,
@@ -496,7 +497,7 @@ const TinderCard = React.forwardRef((
       }
     })
 
-    element.current.addEventListener(('mouseup'), (ev) => {
+    !mobileOnly && element.current.addEventListener(('mouseup'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
@@ -513,7 +514,7 @@ const TinderCard = React.forwardRef((
       }
     })
 
-    element.current.addEventListener(('mouseleave'), (ev) => {
+    !mobileOnly && element.current.addEventListener(('mouseleave'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
