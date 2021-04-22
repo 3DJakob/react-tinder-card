@@ -10,7 +10,12 @@ declare interface API {
    *
    * @param dir The direction in which the card should be swiped. One of: `'left'`, `'right'`, `'up'` and `'down'`.
    */
-  swipe (dir?: Direction): Promise<void>
+  swipe(dir?: Direction): Promise<void>
+  
+  /**
+   * Restore swiped-card state. Use this function if you want to undo a swiped-card (e.g. you have a back button that shows last swiped card or you have a reset button.
+   */
+   restoreCard (): void
 }
 
 declare interface Props {
