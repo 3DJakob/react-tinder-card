@@ -85,6 +85,23 @@ Callback that will be executed when a `TinderCard` has left the screen. It will 
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
 
+### `params`
+
+- optional
+- type: `Object`
+- default: `{}`
+
+An object overriding default settings:
+```
+{
+  snapBackDuration: 300,
+  maxTilt: 5,
+  bouncePower: 0.2,
+  swipeThreshold: 300, // px/s
+  passive: true // see https://developers.google.com/web/updates/2017/01/scrolling-intervention
+}
+```
+
 ## API
 
 ### `swipe([dir])`
