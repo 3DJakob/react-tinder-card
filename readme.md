@@ -32,7 +32,15 @@ import TinderCard from 'react-tinder-card'
 
 // ...
 
-const onSwipe = (direction) => {
+const onSwipeInitiated = () => {
+  console.log('You started a swipe')
+}
+
+const onSwipeUpdate = (direction) => {
+  console.log('You are swiping: ' + direction)
+}
+
+const onSwipeClinched = (direction) => {
   console.log('You swiped: ' + direction)
 }
 
@@ -41,7 +49,13 @@ const onCardLeftScreen = (myIdentifier) => {
 }
 
 return (
-  <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['right', 'left']}>Hello, World!</TinderCard>
+  <TinderCard
+    onSwipeClinched={onSwipeClinched}
+    onCardLeftScreen={() => onCardLeftScreen('fooBar')}
+    preventSwipe={['right', 'left']}
+  >
+    Hello, World!
+  </TinderCard>
 )
 ```
 
@@ -63,7 +77,21 @@ Both Web code examples can be tested on the [demo page.](https://3djakob.github.
 
 Whether or not to let the element be flicked away off-screen after a swipe.
 
-### `onSwipe`
+### `onSwipeInitiated`
+
+- optional
+- type: `SwipeHandler`
+
+Callback that will be executed when a swipe starts.
+
+### `onSwipeUpdate`
+
+- optional
+- type: `SwipeHandler`
+
+Callback that will be executed when a swipe is updated (i.e is moving). It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
+
+### `onSwipeClinched`
 
 - optional
 - type: `SwipeHandler`
@@ -98,6 +126,7 @@ An object overriding default settings:
   maxTilt: 5,
   bouncePower: 0.2,
   swipeThreshold: 300, // px/s
+  getSpeedUpdate: false, // set this to true if you want to use onSwipeUpdate
   passive: true // see https://developers.google.com/web/updates/2017/01/scrolling-intervention
 }
 ```
