@@ -8,6 +8,7 @@ let settings = {
   maxTilt: 5,
   bouncePower: 0.2,
   swipeThreshold: 300, // px/s
+  getSpeedUpdate: false,
   passive: true
 }
 
@@ -131,7 +132,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], params={} }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipeClinched, onSwipeUpdate, onSwipeInitiated, onCardLeftScreen, className, preventSwipe = [], params={} }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
 
   settings = Object.assign(settings, params)
@@ -140,7 +141,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
 
   React.useImperativeHandle(ref, () => ({
     async swipe (dir = 'right') {
-      if (onSwipe) onSwipe(dir)
+      if (onSwipeClinched) onSwipeClinched(dir)
       const power = 1000
       const disturbance = (Math.random() - 0.5) * 100
       if (dir === 'right') {
@@ -165,7 +166,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) {
       const dir = getSwipeDirection(speed)
 
-      if (onSwipe) onSwipe(dir)
+      if (onSwipeClinched) onSwipeClinched(dir)
 
       if (flickOnSwipe) {
         if (!preventSwipe.includes(dir)) {
@@ -179,11 +180,18 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
 
     // Card was not flicked away, animate back to start
     animateBack(element)
-  }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
+  }, [swipeAlreadyReleased, flickOnSwipe, onSwipeClinched, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
+    if (onSwipeInitiated) onSwipeInitiated()
     swipeAlreadyReleased.current = false
-  }, [swipeAlreadyReleased])
+  }, [swipeAlreadyReleased, onSwipeInitiated])
+
+  const handleSwipeUpdate = React.useCallback(async (element, speed) => {
+    const dir = getSwipeDirection(speed)
+    if (onSwipeUpdate) onSwipeUpdate(dir)
+    swipeAlreadyReleased.current = false
+  }, [swipeAlreadyReleased, onSwipeUpdate])
 
   React.useLayoutEffect(() => {
     let offset = { x: null, y: null }
@@ -209,6 +217,9 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
+      if (settings.getSpeedUpdate) {
+        handleSwipeUpdate(element.current, speed)
+      }
     }, { passive: settings.passive })
 
     element.current.addEventListener(('mousemove'), (ev) => {
@@ -217,6 +228,9 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element.current, offset, lastLocation)
         speed = calcSpeed(lastLocation, newLocation)
         lastLocation = newLocation
+        if (settings.getSpeedUpdate) {
+          handleSwipeUpdate(element.current, speed)
+        }
       }
     })
 
