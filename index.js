@@ -132,7 +132,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipeClinched, onSwipeUpdate, onSwipeInitiated, onCardLeftScreen, className, preventSwipe = [], params={} }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipeClinched, onSwipeUpdate, onSwipeInitiated, onSwipeCameBack, onCardLeftScreen, className, preventSwipe = [], params={} }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
 
   settings = Object.assign(settings, params)
@@ -176,11 +176,12 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipeCli
           return
         }
       }
+    } else {
+      // Card was not flicked away, animate back to start
+      if (onSwipeCameBack) onSwipeCameBack()
+      animateBack(element)
     }
-
-    // Card was not flicked away, animate back to start
-    animateBack(element)
-  }, [swipeAlreadyReleased, flickOnSwipe, onSwipeClinched, onCardLeftScreen, preventSwipe])
+  }, [swipeAlreadyReleased, flickOnSwipe, onSwipeClinched, onSwipeCameBack, onCardLeftScreen, preventSwipe])
 
   const handleSwipeStart = React.useCallback(() => {
     if (onSwipeInitiated) onSwipeInitiated()

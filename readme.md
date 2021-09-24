@@ -44,6 +44,10 @@ const onSwipeClinched = (direction) => {
   console.log('You swiped: ' + direction)
 }
 
+const onSwipeCameBack = () => {
+  console.log('Your swipe came back to its original position')
+}
+
 const onCardLeftScreen = (myIdentifier) => {
   console.log(myIdentifier + ' left the screen')
 }
@@ -97,6 +101,13 @@ Callback that will be executed when a swipe is updated (i.e is moving). It will 
 - type: `SwipeHandler`
 
 Callback that will be executed when a swipe has been completed. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
+
+### `onSwipeCameBack`
+
+- optional
+- type: `SwipeHandler`
+
+Callback that will be executed when a swipe come back to its original position (i.e is not flicked away).
 
 ### `onCardLeftScreen`
 
