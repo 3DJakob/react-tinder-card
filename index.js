@@ -3,11 +3,12 @@
 const React = require('react')
 const sleep = require('p-sleep')
 
-const settings = {
+let settings = {
   snapBackDuration: 300,
   maxTilt: 5,
   bouncePower: 0.2,
-  swipeThreshold: 300 // px/s
+  swipeThreshold: 300, // px/s
+  passive: true
 }
 
 const getElementSize = (element) => {
@@ -130,8 +131,10 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], params={} }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
+
+  settings = Object.assign(settings, params)
 
   const element = React.useRef()
 
@@ -192,7 +195,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       ev.preventDefault()
       handleSwipeStart()
       offset = { x: -touchCoordinatesFromEvent(ev).x, y: -touchCoordinatesFromEvent(ev).y }
-    })
+    }, { passive: settings.passive })
 
     element.current.addEventListener(('mousedown'), (ev) => {
       ev.preventDefault()
@@ -206,7 +209,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
-    })
+    }, { passive: settings.passive })
 
     element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
@@ -220,7 +223,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
       handleSwipeReleased(element.current, speed)
-    })
+    }, { passive: settings.passive })
 
     element.current.addEventListener(('mouseup'), (ev) => {
       if (mouseIsClicked) {
