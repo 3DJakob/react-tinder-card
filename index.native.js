@@ -53,6 +53,7 @@ const animateOut = async (gesture, setSpringTarget) => {
 }
 
 const animateBack = (setSpringTarget) => {
+  // TODO make async use onRest to know when returned
   // translate back to the initial position
   setSpringTarget({ x: 0, y: 0, rot: 0, config: physics.animateBack })
 }
@@ -95,6 +96,10 @@ const TinderCard = React.forwardRef(
           await animateOut({ vx: disturbance, vy: -power }, setSpringTarget)
         }
         if (onCardLeftScreen) onCardLeftScreen(dir)
+      },
+      async restoreCard () {
+        await animateBack(() => setSpringTarget())
+        // await animateBack(() => setSpringTarget({x: 0, y: 0, rot: 0, config: physics.touchResponsive, onRest: () => console.log('fooooobar')})) // Return when foobar is logged... How?
       }
     }))
 
