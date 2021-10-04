@@ -96,4 +96,6 @@ Programmatically trigger a swipe of the card in one of the valid directions `'le
 
 ### `restoreCard()`
 
+- returns `Promise<void>` - The promise is resolved once the card is returned. (Note on native the promise gets returned prematurely at the moment)
+
 Restore swiped-card state. Use this function if you want to undo a swiped-card (e.g. you have a back button that shows last swiped card or you have a reset button.
