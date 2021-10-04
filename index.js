@@ -151,6 +151,10 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       }
       element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
+    },
+    restoreCard () {
+      element.current.style.display = 'block'
+      animateBack(element.current)
     }
   }))
 
@@ -220,6 +224,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
       handleSwipeReleased(element.current, speed)
+      speed = { x: 0, y: 0 }
     })
 
     element.current.addEventListener(('mouseup'), (ev) => {
@@ -227,6 +232,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         ev.preventDefault()
         mouseIsClicked = false
         handleSwipeReleased(element.current, speed)
+        speed = { x: 0, y: 0 }
       }
     })
 
@@ -235,6 +241,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         ev.preventDefault()
         mouseIsClicked = false
         handleSwipeReleased(element.current, speed)
+        speed = { x: 0, y: 0 }
       }
     })
   }, [])
