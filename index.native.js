@@ -98,8 +98,8 @@ const TinderCard = React.forwardRef(
         if (onCardLeftScreen) onCardLeftScreen(dir)
       },
       async restoreCard () {
-        await animateBack(() => setSpringTarget())
-        // await animateBack(() => setSpringTarget({x: 0, y: 0, rot: 0, config: physics.touchResponsive, onRest: () => console.log('fooooobar')})) // Return when foobar is logged... How?
+        await animateBack(setSpringTarget)
+        // await animateBack(() => setSpringTarget({x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: () => console.log('fooooobar')})) // Return when foobar is logged... How?
       }
     }))
 
