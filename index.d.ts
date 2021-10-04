@@ -15,7 +15,7 @@ declare interface API {
   /**
    * Restore swiped-card state. Use this function if you want to undo a swiped-card (e.g. you have a back button that shows last swiped card or you have a reset button.
    */
-   restoreCard (): void
+   restoreCard (): Promise<void>
 }
 
 declare interface Props {

@@ -56,20 +56,18 @@ const animateOut = async (element, speed, easeIn = false) => {
   await sleep(time * 1000)
 }
 
-const animateBack = (element) => {
+const animateBack = async (element) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(startingPoint.x * -settings.bouncePower, startingPoint.y * -settings.bouncePower)
   const rotation = rotationString(getRotation(element) * -settings.bouncePower)
   element.style.transform = translation + rotation
 
-  setTimeout(() => {
-    element.style.transform = 'none'
-  }, settings.snapBackDuration * 0.75)
+  await sleep(settings.snapBackDuration * 0.75)
+  element.style.transform = 'none'
 
-  setTimeout(() => {
-    element.style.transition = '10ms'
-  }, settings.snapBackDuration)
+  await sleep(settings.snapBackDuration)
+  element.style.transition = '10ms'
 }
 
 const getSwipeDirection = (speed) => {
@@ -152,9 +150,9 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       element.current.style.display = 'none'
       if (onCardLeftScreen) onCardLeftScreen(dir)
     },
-    restoreCard () {
+    async restoreCard () {
       element.current.style.display = 'block'
-      animateBack(element.current)
+      await animateBack(element.current)
     }
   }))
 
@@ -224,7 +222,6 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     element.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
       handleSwipeReleased(element.current, speed)
-      speed = { x: 0, y: 0 }
     })
 
     element.current.addEventListener(('mouseup'), (ev) => {
@@ -232,7 +229,6 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         ev.preventDefault()
         mouseIsClicked = false
         handleSwipeReleased(element.current, speed)
-        speed = { x: 0, y: 0 }
       }
     })
 
@@ -241,7 +237,6 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         ev.preventDefault()
         mouseIsClicked = false
         handleSwipeReleased(element.current, speed)
-        speed = { x: 0, y: 0 }
       }
     })
   }, [])
