@@ -53,9 +53,10 @@ const animateOut = async (gesture, setSpringTarget) => {
 }
 
 const animateBack = (setSpringTarget) => {
-  // TODO make async use onRest to know when returned
   // translate back to the initial position
-  setSpringTarget({ x: 0, y: 0, rot: 0, config: physics.animateBack })
+  return new Promise((resolve) => {
+    setSpringTarget({ x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: resolve })
+  })
 }
 
 const getSwipeDirection = (speed) => {
@@ -99,7 +100,6 @@ const TinderCard = React.forwardRef(
       },
       async restoreCard () {
         await animateBack(setSpringTarget)
-        // await animateBack(() => setSpringTarget({x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: () => console.log('fooooobar')})) // Return when foobar is logged... How?
       }
     }))
 
