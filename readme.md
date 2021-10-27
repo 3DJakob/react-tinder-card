@@ -104,6 +104,20 @@ The threshold of which to accept swipes. If swipeRequirementType is set to veloc
 On native the default value is 1 as the physics works differently there.
 If swipeRequirementType is set to position it is recommended to set this based on the screen width so cards can be swiped on all screen sizes.
 
+### `onSwipeRequirementFulfilled`
+
+- optional
+- type: `SwipeRequirementFufillUpdate`
+
+Callback that will be executed when a `TinderCard` has fulfilled the requirement necessary to be swiped in a direction on release. This in combination with `onSwipeRequirementUnfulfilled` is useful for displaying user feedback on the card.
+
+### `onSwipeRequirementUnfulfilled`
+
+- optional
+- type: `SwipeRequirementUnfufillUpdate`
+
+Callback that will be executed when a `TinderCard` has unfulfilled the requirement necessary to be swiped in a direction on release.
+
 ### `className`
 
 - optional

@@ -23,6 +23,11 @@ const pythagoras = (x, y) => {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 }
 
+const normalize = (vector, multiplier = 1) => {
+  const length = Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2))
+  return { x: vector.x * multiplier / length, y: vector.y * multiplier / length }
+}
+
 const animateOut = async (element, speed, easeIn = false) => {
   const startPos = getTranslate(element)
   const bodySize = getElementSize(document.body)
@@ -72,10 +77,19 @@ const animateBack = async (element) => {
 
 const getSwipeDirection = (property) => {
   if (Math.abs(property.x) > Math.abs(property.y)) {
-    return (property.x > 0) ? 'right' : 'left'
+    if (property.x > settings.swipeThreshold) {
+      return 'right'
+    } else if (property.x < -settings.swipeThreshold) {
+      return 'left'
+    }
   } else {
-    return (property.y > 0) ? 'up' : 'down'
+    if (property.y > settings.swipeThreshold) {
+      return 'up'
+    } else if (property.y < -settings.swipeThreshold) {
+      return 'down'
+    }
   }
+  return 'none'
 }
 
 const calcSpeed = (oldLocation, newLocation) => {
@@ -98,7 +112,7 @@ const rotationString = (rot) => {
 const getTranslate = (element) => {
   const style = window.getComputedStyle(element)
   const matrix = new WebKitCSSMatrix(style.webkitTransform)
-  const ans = { x: matrix.m41, y: matrix.m42 }
+  const ans = { x: matrix.m41, y: -matrix.m42 }
   return ans
 }
 
@@ -128,7 +142,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled }, ref) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
@@ -162,23 +176,15 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     swipeAlreadyReleased.current = true
 
     const currentPostion = getTranslate(element)
-    currentPostion.y = -currentPostion.y // translation is flipped compared to what animateOut wants
-
-    const passesSwipeRequirement = swipeRequirementType === 'velocity' ? (
-      Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold
-    ) : (
-      Math.abs(currentPostion.x) > settings.swipeThreshold || Math.abs(currentPostion.y) > settings.swipeThreshold
-    )
-
     // Check if this is a swipe
-    if (passesSwipeRequirement) {
-      const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : currentPostion)
+    const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : currentPostion)
 
+    if (dir !== 'none') {
       if (onSwipe) onSwipe(dir)
 
       if (flickOnSwipe) {
         if (!preventSwipe.includes(dir)) {
-          const outVelocity = swipeRequirementType === 'velocity' ? speed : currentPostion
+          const outVelocity = swipeRequirementType === 'velocity' ? speed : normalize(currentPostion, 600)
           await animateOut(element, outVelocity)
           element.style.display = 'none'
           if (onCardLeftScreen) onCardLeftScreen(dir)
@@ -189,7 +195,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
 
     // Card was not flicked away, animate back to start
     animateBack(element)
-  }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe])
+  }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe, swipeRequirementType])
 
   const handleSwipeStart = React.useCallback(() => {
     swipeAlreadyReleased.current = false
@@ -200,6 +206,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     let speed = { x: 0, y: 0 }
     let lastLocation = { x: 0, y: 0, time: new Date().getTime() }
     let mouseIsClicked = false
+    let swipeThresholdFulfilledDirection = 'none'
 
     element.current.addEventListener(('touchstart'), (ev) => {
       ev.preventDefault()
@@ -214,19 +221,33 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       offset = { x: -mouseCoordinatesFromEvent(ev).x, y: -mouseCoordinatesFromEvent(ev).y }
     })
 
-    element.current.addEventListener(('touchmove'), (ev) => {
-      ev.preventDefault()
-      const newLocation = dragableTouchmove(touchCoordinatesFromEvent(ev), element.current, offset, lastLocation)
+    const handleMove = (coordinates) => {
+      // Check fulfillment
+      const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : getTranslate(element.current))
+      if (dir !== swipeThresholdFulfilledDirection) {
+        swipeThresholdFulfilledDirection = dir
+        if (swipeThresholdFulfilledDirection === 'none') {
+          onSwipeRequirementUnfulfilled()
+        } else {
+          onSwipeRequirementFulfilled(dir)
+        }
+      }
+
+      // Move
+      const newLocation = dragableTouchmove(coordinates, element.current, offset, lastLocation)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
+    }
+
+    element.current.addEventListener(('touchmove'), (ev) => {
+      ev.preventDefault()
+      handleMove(touchCoordinatesFromEvent(ev))
     })
 
     element.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
-        const newLocation = dragableTouchmove(mouseCoordinatesFromEvent(ev), element.current, offset, lastLocation)
-        speed = calcSpeed(lastLocation, newLocation)
-        lastLocation = newLocation
+        handleMove(mouseCoordinatesFromEvent(ev))
       }
     })
 
@@ -250,7 +271,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         handleSwipeReleased(element.current, speed)
       }
     })
-  }, [])
+  }, []) // TODO fix so swipeRequirementType can be changed on the fly. Pass as dependency cleanup eventlisteners and update new eventlisteners.
 
   return (
     React.createElement('div', { ref: element, className }, children)

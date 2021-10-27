@@ -3,6 +3,8 @@ import React from 'react'
 declare type Direction = 'left' | 'right' | 'up' | 'down'
 declare type SwipeHandler = (direction: Direction) => void
 declare type CardLeftScreenHandler = (direction: Direction) => void
+declare type SwipeRequirementFufillUpdate = (direction: Direction) => void
+declare type SwipeRequirementUnfufillUpdate = () => void
 
 declare interface API {
   /**
@@ -51,7 +53,7 @@ declare interface Props {
    * 
    * @default 'velocity'
    */
-   swipeRequirementType?: 'velocity' | 'position'
+  swipeRequirementType?: 'velocity' | 'position'
 
    /**
    * The threshold of which to accept swipes. If swipeRequirementType is set to velocity it is the velocity threshold and if set to position it is the position threshold.
@@ -60,7 +62,17 @@ declare interface Props {
    * 
    * @default 300
    */
-    swipeThreshold?: number
+  swipeThreshold?: number
+
+  /**
+   * Callback that will be executed when a `TinderCard` has fulfilled the requirement necessary to be swiped in a direction on release. This in combination with `onSwipeRequirementUnfulfilled` is useful for displaying user feedback on the card.
+   */
+  onSwipeRequirementFulfilled?: SwipeRequirementFufillUpdate
+
+  /**
+   * Callback that will be executed when a `TinderCard` has unfulfilled the requirement necessary to be swiped in a direction on release.
+   */
+  onSwipeRequirementUnfulfilled?: SwipeRequirementUnfufillUpdate
 
   /**
    * HTML attribute class
