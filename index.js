@@ -159,7 +159,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
   const handleSwipeReleased = React.useCallback(async (element, speed) => {
     if (swipeAlreadyReleased.current) { return }
     swipeAlreadyReleased.current = true
-    
+
     const currentPostion = getTranslate(element)
     currentPostion.y = -currentPostion.y // translation is flipped compared to what animateOut wants
 
@@ -176,7 +176,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       if (onSwipe) onSwipe(dir)
 
       if (flickOnSwipe) {
-        if (!preventSwipe.includes(dir)) {          
+        if (!preventSwipe.includes(dir)) {
           const outVelocity = swipeRequirementType === 'velocity' ? speed : currentPostion
           await animateOut(element, outVelocity)
           element.style.display = 'none'
