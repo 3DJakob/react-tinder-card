@@ -223,13 +223,15 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
 
     const handleMove = (coordinates) => {
       // Check fulfillment
-      const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : getTranslate(element.current))
-      if (dir !== swipeThresholdFulfilledDirection) {
-        swipeThresholdFulfilledDirection = dir
-        if (swipeThresholdFulfilledDirection === 'none') {
-          onSwipeRequirementUnfulfilled()
-        } else {
-          onSwipeRequirementFulfilled(dir)
+      if (onSwipeRequirementFulfilled || onSwipeRequirementUnfulfilled) {
+        const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : getTranslate(element.current))
+        if (dir !== swipeThresholdFulfilledDirection) {
+          swipeThresholdFulfilledDirection = dir
+          if (swipeThresholdFulfilledDirection === 'none') {
+            if (onSwipeRequirementUnfulfilled) onSwipeRequirementUnfulfilled()
+          } else {
+            if (onSwipeRequirementFulfilled) onSwipeRequirementFulfilled(dir)
+          }
         }
       }
 
