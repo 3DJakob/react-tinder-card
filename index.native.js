@@ -1,4 +1,4 @@
-const React = require('react')
+const React, { useState } = require('react')
 const { View, PanResponder, Dimensions } = require('react-native')
 const { useSpring, animated } = require('react-spring/native')
 const { height, width } = Dimensions.get('window')
@@ -64,12 +64,21 @@ const animateBack = (setSpringTarget) => {
   })
 }
 
-const getSwipeDirection = (speed) => {
-  if (Math.abs(speed.x) > Math.abs(speed.y)) {
-    return speed.x > 0 ? 'right' : 'left'
+const getSwipeDirection = (property) => {
+  if (Math.abs(property.x) > Math.abs(property.y)) {
+    if (property.x > settings.swipeThreshold) {
+      return 'right'
+    } else if (property.x < -settings.swipeThreshold) {
+      return 'left'
+    }
   } else {
-    return speed.y > 0 ? 'down' : 'up'
+    if (property.y > settings.swipeThreshold) {
+      return 'up'
+    } else if (property.y < -settings.swipeThreshold) {
+      return 'down'
+    }
   }
+  return 'none'
 }
 
 // must be created outside of the TinderCard forwardRef
@@ -77,7 +86,7 @@ const AnimatedView = animated(View)
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold },
+    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
     ref
   ) => {
     const [{ x, y, rot }, setSpringTarget] = useSpring(() => ({
@@ -86,6 +95,7 @@ const TinderCard = React.forwardRef(
       rot: 0,
       config: physics.touchResponsive
     }))
+    const [swipeThresholdFulfilledDirection, setSwipeThresholdFulfilledDirection] = useState('none')
 
     settings.swipeThreshold = swipeThreshold
 
@@ -113,17 +123,12 @@ const TinderCard = React.forwardRef(
     const handleSwipeReleased = React.useCallback(
       async (setSpringTarget, gesture) => {
         // Check if this is a swipe
-        const passesSwipeRequirement = (
-          Math.abs(swipeRequirementType === 'velocity' ? gesture.vx : gesture.dx) > settings.swipeThreshold ||
-          Math.abs(swipeRequirementType === 'velocity' ? gesture.vy : gesture.dy) > settings.swipeThreshold
-        )
-        if (passesSwipeRequirement) {
-          console.log('passed!!')
-          const dir = getSwipeDirection({
-            x: swipeRequirementType === 'velocity' ? gesture.vx : gesture.dx,
-            y: swipeRequirementType === 'velocity' ? gesture.vy : gesture.dy
-          })
+        const dir = getSwipeDirection({
+          x: swipeRequirementType === 'velocity' ? gesture.vx : gesture.dx,
+          y: swipeRequirementType === 'velocity' ? gesture.vy : gesture.dy
+        })
 
+        if (dir !== 'none') {
           if (flickOnSwipe) {
             if (!preventSwipe.includes(dir)) {
               if (onSwipe) onSwipe(dir)
@@ -161,6 +166,22 @@ const TinderCard = React.forwardRef(
             setSpringTarget({ x: gestureState.dx, y: gestureState.dy, rot: 0, config: physics.touchResponsive })
           },
           onPanResponderMove: (evt, gestureState) => {
+            // Check fulfillment
+            if (onSwipeRequirementFulfilled || onSwipeRequirementUnfulfilled) {
+              const dir = getSwipeDirection({
+                x: swipeRequirementType === 'velocity' ? gestureState.vx : gestureState.dx,
+                y: swipeRequirementType === 'velocity' ? gestureState.vy : gestureState.dy
+              })
+              if (dir !== swipeThresholdFulfilledDirection) {
+                setSwipeThresholdFulfilledDirection(dir)
+                if (swipeThresholdFulfilledDirection === 'none') {
+                  if (onSwipeRequirementUnfulfilled) onSwipeRequirementUnfulfilled()
+                } else {
+                  if (onSwipeRequirementFulfilled) onSwipeRequirementFulfilled(dir)
+                }
+              }
+            }
+
             // use guestureState.vx / guestureState.vy for velocity calculations
             // translate element
             let rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
