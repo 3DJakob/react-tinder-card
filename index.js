@@ -70,11 +70,11 @@ const animateBack = async (element) => {
   element.style.transition = '10ms'
 }
 
-const getSwipeDirection = (speed) => {
-  if (Math.abs(speed.x) > Math.abs(speed.y)) {
-    return (speed.x > 0) ? 'right' : 'left'
+const getSwipeDirection = (property) => {
+  if (Math.abs(property.x) > Math.abs(property.y)) {
+    return (property.x > 0) ? 'right' : 'left'
   } else {
-    return (speed.y > 0) ? 'up' : 'down'
+    return (property.y > 0) ? 'up' : 'down'
   }
 }
 
@@ -128,7 +128,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [] }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity' }, ref) => {
   const swipeAlreadyReleased = React.useRef(false)
 
   const element = React.useRef()
@@ -159,16 +159,26 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
   const handleSwipeReleased = React.useCallback(async (element, speed) => {
     if (swipeAlreadyReleased.current) { return }
     swipeAlreadyReleased.current = true
+    
+    const currentPostion = getTranslate(element)
+    currentPostion.y = -currentPostion.y // translation is flipped compared to what animateOut wants
+
+    const passesSwipeRequirement = swipeRequirementType === 'velocity' ? (
+      Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold
+    ) : (
+      Math.abs(currentPostion.x) > settings.swipeThreshold || Math.abs(currentPostion.y) > settings.swipeThreshold
+    )
 
     // Check if this is a swipe
-    if (Math.abs(speed.x) > settings.swipeThreshold || Math.abs(speed.y) > settings.swipeThreshold) {
-      const dir = getSwipeDirection(speed)
+    if (passesSwipeRequirement) {
+      const dir = getSwipeDirection(swipeRequirementType === 'velocity' ? speed : currentPostion)
 
       if (onSwipe) onSwipe(dir)
 
       if (flickOnSwipe) {
-        if (!preventSwipe.includes(dir)) {
-          await animateOut(element, speed)
+        if (!preventSwipe.includes(dir)) {          
+          const outVelocity = swipeRequirementType === 'velocity' ? speed : currentPostion
+          await animateOut(element, outVelocity)
           element.style.display = 'none'
           if (onCardLeftScreen) onCardLeftScreen(dir)
           return

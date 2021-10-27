@@ -85,6 +85,21 @@ Callback that will be executed when a `TinderCard` has left the screen. It will 
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
 
+### `swipeRequirementType`
+
+- optional
+- type: `'velocity' | 'position'`
+- default: `'velocity'`
+
+What method to evaluate what direction to throw the card on release. 'velocity' will evalute direction based on the diection of the swiping movement. 'position' will evalute direction based on the postion the card has on the screen like in the app tinder.
+
+### `className`
+
+- optional
+- type: `string`
+
+HTML attribute class
+
 ## API
 
 ### `swipe([dir])`
@@ -96,6 +111,6 @@ Programmatically trigger a swipe of the card in one of the valid directions `'le
 
 ### `restoreCard()`
 
-- returns `Promise<void>` - The promise is resolved once the card is returned.
+- returns `Promise<void>`
 
-Restore swiped-card state. Use this function if you want to undo a swiped-card (e.g. you have a back button that shows last swiped card or you have a reset button.
+Restore swiped-card state. Use this function if you want to undo a swiped-card (e.g. you have a back button that shows last swiped card or you have a reset button. The promise is resolved once the card is returned
