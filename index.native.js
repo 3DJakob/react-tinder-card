@@ -77,7 +77,7 @@ const AnimatedView = animated(View)
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity' },
+    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold },
     ref
   ) => {
     const [{ x, y, rot }, setSpringTarget] = useSpring(() => ({
@@ -86,6 +86,8 @@ const TinderCard = React.forwardRef(
       rot: 0,
       config: physics.touchResponsive
     }))
+
+    settings.swipeThreshold = swipeThreshold
 
     React.useImperativeHandle(ref, () => ({
       async swipe (dir = 'right') {

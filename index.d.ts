@@ -46,11 +46,21 @@ declare interface Props {
   preventSwipe?: string[]
 
   /**
-   * What method to evaluate what direction to throw the card on release. 'velocity' will evalute direction based on the diection of the swiping movement. 'position' will evalute direction based on the postion the card has on the screen like in the app tinder.
-   *
+   * What method to evaluate what direction to throw the card on release. 'velocity' will evaluate direction based on the direction of the swiping movement. 'position' will evaluate direction based on the position the card has on the screen like in the app tinder.
+   * If set to position it is recommended to manually set swipeThreshold based on the screen size as not all devices will accommodate the default distance of 300px and the default native swipeThreshold is 1.5px which most likely is undesirably low.
+   * 
    * @default 'velocity'
    */
    swipeRequirementType?: 'velocity' | 'position'
+
+   /**
+   * The threshold of which to accept swipes. If swipeRequirementType is set to velocity it is the velocity threshold and if set to position it is the position threshold.
+   * On native the default value is 1 as the physics works differently there.
+   * If swipeRequirementType is set to position it is recommended to set this based on the screen width so cards can be swiped on all screen sizes.
+   * 
+   * @default 300
+   */
+    swipeThreshold?: number
 
   /**
    * HTML attribute class
