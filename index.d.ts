@@ -47,7 +47,7 @@ declare interface Props {
 
   /**
    * What method to evaluate what direction to throw the card on release. 'velocity' will evaluate direction based on the direction of the swiping movement. 'position' will evaluate direction based on the position the card has on the screen like in the app tinder.
-   * If set to position it is recommended to manually set swipeThreshold based on the screen size as not all devices will accommodate the default distance of 300px and the default native swipeThreshold is 1.5px which most likely is undesirably low.
+   * If set to position it is recommended to manually set swipeThreshold based on the screen size as not all devices will accommodate the default distance of 300px and the default native swipeThreshold is 1px which most likely is undesirably low.
    * 
    * @default 'velocity'
    */
