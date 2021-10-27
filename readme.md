@@ -9,7 +9,7 @@ A react component to make swipeable elements like in the app tinder.
 The import and api is identical for both Web and Native.
 
 ## Demo
-![](tinder.gif)
+![](demo.gif)
 
 Try out the interactive demo <a href="https://3djakob.github.io/react-tinder-card-demo/">here.</a>
 
