@@ -109,7 +109,7 @@ If swipeRequirementType is set to position it is recommended to set this based o
 - optional
 - type: `SwipeRequirementFufillUpdate`
 
-Callback that will be executed when a `TinderCard` has fulfilled the requirement necessary to be swiped in a direction on release. This in combination with `onSwipeRequirementUnfulfilled` is useful for displaying user feedback on the card.
+Callback that will be executed when a `TinderCard` has fulfilled the requirement necessary to be swiped in a direction on release. This in combination with `onSwipeRequirementUnfulfilled` is useful for displaying user feedback on the card. When using this it is recommended to use swipeRequirementType='position' as this will fire a lot otherwise.
 
 ### `onSwipeRequirementUnfulfilled`
 
