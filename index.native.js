@@ -1,4 +1,4 @@
-const React, { useState } = require('react')
+const React = require('react')
 const { View, PanResponder, Dimensions } = require('react-native')
 const { useSpring, animated } = require('react-spring/native')
 const { height, width } = Dimensions.get('window')
@@ -73,9 +73,9 @@ const getSwipeDirection = (property) => {
     }
   } else {
     if (property.y > settings.swipeThreshold) {
-      return 'up'
-    } else if (property.y < -settings.swipeThreshold) {
       return 'down'
+    } else if (property.y < -settings.swipeThreshold) {
+      return 'up'
     }
   }
   return 'none'
@@ -95,8 +95,6 @@ const TinderCard = React.forwardRef(
       rot: 0,
       config: physics.touchResponsive
     }))
-    const [swipeThresholdFulfilledDirection, setSwipeThresholdFulfilledDirection] = useState('none')
-
     settings.swipeThreshold = swipeThreshold
 
     React.useImperativeHandle(ref, () => ({
@@ -151,6 +149,7 @@ const TinderCard = React.forwardRef(
       [flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe]
     )
 
+    let swipeThresholdFulfilledDirection = 'none'
     const panResponder = React.useMemo(
       () =>
         PanResponder.create({
@@ -173,7 +172,7 @@ const TinderCard = React.forwardRef(
                 y: swipeRequirementType === 'velocity' ? gestureState.vy : gestureState.dy
               })
               if (dir !== swipeThresholdFulfilledDirection) {
-                setSwipeThresholdFulfilledDirection(dir)
+                swipeThresholdFulfilledDirection = dir
                 if (swipeThresholdFulfilledDirection === 'none') {
                   if (onSwipeRequirementUnfulfilled) onSwipeRequirementUnfulfilled()
                 } else {
