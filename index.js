@@ -69,10 +69,10 @@ const animateBack = async (element) => {
   element.style.transform = translation + rotation
 
   await sleep(settings.snapBackDuration * 0.75)
-  element.style.transform = 'none'
+  element.style.removeProperty("transform");
 
   await sleep(settings.snapBackDuration)
-  element.style.transition = '10ms'
+  element.style.removeProperty("transition");
 }
 
 const getSwipeDirection = (property) => {
