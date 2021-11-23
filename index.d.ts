@@ -80,7 +80,7 @@ declare interface Props {
    *
    * @default true
    */
-   rotateOnDrag: boolean
+   rotateOnDrag?: boolean
 
   /**
    * HTML attribute class
