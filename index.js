@@ -123,12 +123,16 @@ const getRotation = (element) => {
   return ans
 }
 
-const dragableTouchmove = (coordinates, element, offset, lastLocation) => {
+const dragableTouchmove = (coordinates, element, offset, lastLocation, rotateOnDrag) => {
   const pos = { x: coordinates.x + offset.x, y: coordinates.y + offset.y }
   const newLocation = { x: pos.x, y: pos.y, time: new Date().getTime() }
   const translation = translationString(pos.x, pos.y)
-  const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
-  const rotation = rotationString(rotCalc * settings.maxTilt)
+  let rotation = "";
+  if(rotateOnDrag) {
+    const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
+    rotation = rotationString(rotCalc * settings.maxTilt)
+  }
+  
   element.style.transform = translation + rotation
   return newLocation
 }
@@ -142,7 +146,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, rotateOnDrag = true }, ref) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
@@ -236,7 +240,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       }
 
       // Move
-      const newLocation = dragableTouchmove(coordinates, element.current, offset, lastLocation)
+      const newLocation = dragableTouchmove(coordinates, element.current, offset, lastLocation, rotateOnDrag)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
     }
