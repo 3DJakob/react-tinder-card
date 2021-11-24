@@ -76,11 +76,11 @@ declare interface Props {
   onSwipeRequirementUnfulfilled?: SwipeRequirementUnfufillUpdate
 
   /**
-   * Enable or disable rotating the card when dragging. Not rotating the card gives better performance.
+   * Multiplier used to reduce the rotate effect while dragging (when set between 0 - 1). When set to `0`, rotate will be disabled rotation all together. Values greater than 1 are valid, however, this may lead to undesirable effects.
    *
-   * @default true
+   * @default 1
    */
-   rotateOnDrag?: boolean
+   rotateMultiplier?: number
 
   /**
    * HTML attribute class

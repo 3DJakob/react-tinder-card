@@ -86,7 +86,7 @@ const AnimatedView = animated(View)
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, rotateOnDrag = true },
+    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, rotateMultiplier = 1 },
     ref
   ) => {
     const [{ x, y, rot }, setSpringTarget] = useSpring(() => ({
@@ -184,9 +184,9 @@ const TinderCard = React.forwardRef(
             // use guestureState.vx / guestureState.vy for velocity calculations
             // translate element
             let rot = 0
-            if (rotateOnDrag) {
+            if (rotateMultiplier) {
               rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
-              rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
+              rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt) * rotateMultiplier
             }
             setSpringTarget({ x: gestureState.dx, y: gestureState.dy, rot, config: physics.touchResponsive })
           },

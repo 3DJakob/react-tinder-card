@@ -123,14 +123,14 @@ const getRotation = (element) => {
   return ans
 }
 
-const dragableTouchmove = (coordinates, element, offset, lastLocation, rotateOnDrag) => {
+const dragableTouchmove = (coordinates, element, offset, lastLocation, rotateMultiplier) => {
   const pos = { x: coordinates.x + offset.x, y: coordinates.y + offset.y }
   const newLocation = { x: pos.x, y: pos.y, time: new Date().getTime() }
   const translation = translationString(pos.x, pos.y)
   let rotation = ''
-  if (rotateOnDrag) {
+  if (rotateMultiplier) {
     const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
-    rotation = rotationString(rotCalc * settings.maxTilt)
+    rotation = rotationString(rotCalc * settings.maxTilt * rotateMultiplier)
   }
 
   element.style.transform = translation + rotation
@@ -146,7 +146,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, rotateOnDrag = true }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, rotateMultiplier = 1 }, ref) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
@@ -240,7 +240,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       }
 
       // Move
-      const newLocation = dragableTouchmove(coordinates, element.current, offset, lastLocation, rotateOnDrag)
+      const newLocation = dragableTouchmove(coordinates, element.current, offset, lastLocation, rotateMultiplier)
       speed = calcSpeed(lastLocation, newLocation)
       lastLocation = newLocation
     }
