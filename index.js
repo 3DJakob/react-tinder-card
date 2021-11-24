@@ -69,10 +69,10 @@ const animateBack = async (element) => {
   element.style.transform = translation + rotation
 
   await sleep(settings.snapBackDuration * 0.75)
-  element.style.removeProperty("transform");
+  element.style.removeProperty('transform')
 
   await sleep(settings.snapBackDuration)
-  element.style.removeProperty("transition");
+  element.style.removeProperty('transition')
 }
 
 const getSwipeDirection = (property) => {
@@ -127,12 +127,12 @@ const dragableTouchmove = (coordinates, element, offset, lastLocation, rotateOnD
   const pos = { x: coordinates.x + offset.x, y: coordinates.y + offset.y }
   const newLocation = { x: pos.x, y: pos.y, time: new Date().getTime() }
   const translation = translationString(pos.x, pos.y)
-  let rotation = "";
-  if(rotateOnDrag) {
+  let rotation = ''
+  if (rotateOnDrag) {
     const rotCalc = calcSpeed(lastLocation, newLocation).x / 1000
     rotation = rotationString(rotCalc * settings.maxTilt)
   }
-  
+
   element.style.transform = translation + rotation
   return newLocation
 }

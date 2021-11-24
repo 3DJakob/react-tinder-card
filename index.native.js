@@ -183,8 +183,8 @@ const TinderCard = React.forwardRef(
 
             // use guestureState.vx / guestureState.vy for velocity calculations
             // translate element
-            let rot = 0;
-            if(rotateOnDrag) {
+            let rot = 0
+            if (rotateOnDrag) {
               rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
               rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
             }
