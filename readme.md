@@ -18,7 +18,7 @@ Check out the Web demo repo <a href="https://github.com/3DJakob/react-tinder-car
 Check out the Native demo repo <a href="https://github.com/3DJakob/react-native-tinder-card-demo">here.</a>
 
 ## Contributing
-Want to contribute? Check out the [contributing.md](https://github.com/3DJakob/react-tinder-card/blob/master/contributing.md).
+Want to contribute? Check out the [contributing.md](https://github.com/3DJakob/react-tinder-card/blob/master/CONTRIBUTING.md).
 
 ## Installation
 
