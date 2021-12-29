@@ -61,7 +61,7 @@ const animateOut = async (element, speed, easeIn = false) => {
   await sleep(time * 1000)
 }
 
-const animateBack = async (element) => {
+const animateBack = async (element, dragTransitionDuration) => {
   element.style.transition = settings.snapBackDuration + 'ms'
   const startingPoint = getTranslate(element)
   const translation = translationString(startingPoint.x * -settings.bouncePower, startingPoint.y * -settings.bouncePower)
@@ -72,7 +72,7 @@ const animateBack = async (element) => {
   element.style.transform = 'none'
 
   await sleep(settings.snapBackDuration)
-  element.style.transition = '10ms'
+  element.style.transition = dragTransitionDuration
 }
 
 const getSwipeDirection = (property) => {
@@ -142,7 +142,22 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled }, ref) => {
+const TinderCard = React.forwardRef((
+  {
+    flickOnSwipe = true,
+    children,
+    onSwipe,
+    onCardLeftScreen,
+    className,
+    preventSwipe = [],
+    swipeRequirementType = 'velocity',
+    swipeThreshold = settings.swipeThreshold,
+    onSwipeRequirementFulfilled,
+    onSwipeRequirementUnfulfilled,
+    dragTransitionDuration = '10ms'
+  },
+  ref
+) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
@@ -167,7 +182,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     },
     async restoreCard () {
       element.current.style.display = 'block'
-      await animateBack(element.current)
+      await animateBack(element.current, dragTransitionDuration)
     }
   }))
 
@@ -194,7 +209,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     }
 
     // Card was not flicked away, animate back to start
-    animateBack(element)
+    animateBack(element, dragTransitionDuration)
   }, [swipeAlreadyReleased, flickOnSwipe, onSwipe, onCardLeftScreen, preventSwipe, swipeRequirementType])
 
   const handleSwipeStart = React.useCallback(() => {
