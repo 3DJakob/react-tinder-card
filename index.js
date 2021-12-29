@@ -71,7 +71,7 @@ const animateBack = async (element) => {
   await sleep(settings.snapBackDuration * 0.75)
   element.style.transform = 'none'
 
-  await sleep(settings.snapBackDuration)
+  await sleep(settings.snapBackDuration * 0.25)
   element.style.transition = '10ms'
 }
 
