@@ -122,6 +122,14 @@ It will be called with a single string denoting which direction the user is swip
 
 Callback that will be executed when a `TinderCard` has unfulfilled the requirement necessary to be swiped in a direction on release.
 
+### `rotateMultiplier`
+
+- optional
+- type: `number`
+- default: `1`
+
+Multiplier used to reduce the rotate effect while dragging (when set between 0 - 1). When set to `0`, rotate will be disabled rotation all together. Values greater than 1 are valid, however, this may lead to undesirable effects.
+
 ### `className`
 
 - optional

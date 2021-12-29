@@ -76,6 +76,13 @@ declare interface Props {
   onSwipeRequirementUnfulfilled?: SwipeRequirementUnfufillUpdate
 
   /**
+   * Multiplier used to reduce the rotate effect while dragging (when set between 0 - 1). When set to `0`, rotate will be disabled rotation all together. Values greater than 1 are valid, however, this may lead to undesirable effects.
+   *
+   * @default 1
+   */
+   rotateMultiplier?: number
+
+  /**
    * HTML attribute class
    */
   className?: string
