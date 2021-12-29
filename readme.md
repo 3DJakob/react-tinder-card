@@ -122,6 +122,14 @@ It will be called with a single string denoting which direction the user is swip
 
 Callback that will be executed when a `TinderCard` has unfulfilled the requirement necessary to be swiped in a direction on release.
 
+### `dragTransitionDuration`
+
+- optional
+- type: `string`
+
+The duration of the CSS transition property of the card element. Default to 10ms.
+High values create smoother translation and rotation
+
 ### `className`
 
 - optional

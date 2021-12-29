@@ -76,6 +76,12 @@ declare interface Props {
   onSwipeRequirementUnfulfilled?: SwipeRequirementUnfufillUpdate
 
   /**
+   * The duration of the CSS transition property of the card element. Default to 10ms.
+   * High values create smoother translation and rotation
+   */
+   dragTransitionDuration?: string
+
+  /**
    * HTML attribute class
    */
   className?: string
