@@ -19,6 +19,30 @@ const getElementSize = (element) => {
   return { x: width, y: height }
 }
 
+const getElementComputedStyle = (element) => {
+  const elementStyles = window.getComputedStyle(element)
+  const widthString = elementStyles.getPropertyValue('width')
+  const width = Number(widthString.split('px')[0])
+  const heightString = elementStyles.getPropertyValue('height')
+  const height = Number(heightString.split('px')[0])
+  const paddingTopString = elementStyles.getPropertyValue('padding-top')
+  const paddingTop = Number(paddingTopString.split('px')[0])
+  const paddingBottomString = elementStyles.getPropertyValue('padding-bottom')
+  const paddingBottom = Number(paddingBottomString.split('px')[0])
+  const paddingRightString = elementStyles.getPropertyValue('padding-right')
+  const paddingRight = Number(paddingRightString.split('px')[0])
+  const paddingLeftString = elementStyles.getPropertyValue('padding-left')
+  const paddingLeft = Number(paddingLeftString.split('px')[0])
+  return {
+    x: width,
+    y: height,
+    paddingTop,
+    paddingBottom,
+    paddingRight,
+    paddingLeft
+  }
+}
+
 const pythagoras = (x, y) => {
   return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 }
@@ -73,6 +97,22 @@ const animateBack = async (element) => {
 
   await sleep(settings.snapBackDuration)
   element.style.transition = '10ms'
+}
+
+const getHiddenSettings = (element) => {
+  const bodySize = getElementComputedStyle(document.body)
+
+  let elementSize = { x: 0, y: 0 }
+  if (element) {
+    elementSize = getElementSize(element)
+  }
+
+  return {
+    display: 'none',
+    // todo: card always came from right, maybe parametrize that
+    transform: 'translate(' + (bodySize.x + bodySize.paddingRight + elementSize.x) + 'px, 0px)',
+    transition: 'none'
+  }
 }
 
 const getSwipeDirection = (property) => {
@@ -142,7 +182,7 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, hidden = false }, ref) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
@@ -168,6 +208,12 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     async restoreCard () {
       element.current.style.display = 'block'
       await animateBack(element.current)
+    },
+    hideCard () {
+      const hiddenSettings = getHiddenSettings()
+      element.current.style.display = hiddenSettings.display
+      element.current.style.transform = hiddenSettings.transform
+      element.current.style.transition = hiddenSettings.transition
     }
   }))
 
@@ -273,6 +319,13 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
         handleSwipeReleased(element.current, speed)
       }
     })
+
+    if (hidden) {
+      const hiddenSettings = getHiddenSettings()
+      element.current.style.display = hiddenSettings.display
+      element.current.style.transform = hiddenSettings.transform
+      element.current.style.transition = hiddenSettings.transition
+    }
   }, []) // TODO fix so swipeRequirementType can be changed on the fly. Pass as dependency cleanup eventlisteners and update new eventlisteners.
 
   return (
