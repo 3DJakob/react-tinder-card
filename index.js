@@ -142,11 +142,15 @@ const mouseCoordinatesFromEvent = (e) => {
   return { x: e.clientX, y: e.clientY }
 }
 
-const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled }, ref) => {
+const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled, dragHandleRef = null }, ref) => {
   settings.swipeThreshold = swipeThreshold
   const swipeAlreadyReleased = React.useRef(false)
 
   const element = React.useRef()
+
+  if (!dragHandleRef) {
+    dragHandleRef = element
+  }
 
   React.useImperativeHandle(ref, () => ({
     async swipe (dir = 'right') {
@@ -208,13 +212,13 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
     let mouseIsClicked = false
     let swipeThresholdFulfilledDirection = 'none'
 
-    element.current.addEventListener(('touchstart'), (ev) => {
+    dragHandleRef.current.addEventListener(('touchstart'), (ev) => {
       ev.preventDefault()
       handleSwipeStart()
       offset = { x: -touchCoordinatesFromEvent(ev).x, y: -touchCoordinatesFromEvent(ev).y }
     })
 
-    element.current.addEventListener(('mousedown'), (ev) => {
+    dragHandleRef.current.addEventListener(('mousedown'), (ev) => {
       ev.preventDefault()
       mouseIsClicked = true
       handleSwipeStart()
@@ -241,24 +245,24 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       lastLocation = newLocation
     }
 
-    element.current.addEventListener(('touchmove'), (ev) => {
+    dragHandleRef.current.addEventListener(('touchmove'), (ev) => {
       ev.preventDefault()
       handleMove(touchCoordinatesFromEvent(ev))
     })
 
-    element.current.addEventListener(('mousemove'), (ev) => {
+    dragHandleRef.current.addEventListener(('mousemove'), (ev) => {
       ev.preventDefault()
       if (mouseIsClicked) {
         handleMove(mouseCoordinatesFromEvent(ev))
       }
     })
 
-    element.current.addEventListener(('touchend'), (ev) => {
+    dragHandleRef.current.addEventListener(('touchend'), (ev) => {
       ev.preventDefault()
       handleSwipeReleased(element.current, speed)
     })
 
-    element.current.addEventListener(('mouseup'), (ev) => {
+    dragHandleRef.current.addEventListener(('mouseup'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
@@ -266,7 +270,7 @@ const TinderCard = React.forwardRef(({ flickOnSwipe = true, children, onSwipe, o
       }
     })
 
-    element.current.addEventListener(('mouseleave'), (ev) => {
+    dragHandleRef.current.addEventListener(('mouseleave'), (ev) => {
       if (mouseIsClicked) {
         ev.preventDefault()
         mouseIsClicked = false
