@@ -79,6 +79,11 @@ declare interface Props {
    * HTML attribute class
    */
   className?: string
+
+  /**
+   * Optional Drag Handle Ref
+   */
+   dragHandleRef?: React.Ref<API>
 }
 
 declare const TinderCard: React.FC<Props>

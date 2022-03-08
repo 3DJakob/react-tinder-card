@@ -129,6 +129,13 @@ Callback that will be executed when a `TinderCard` has unfulfilled the requireme
 
 HTML attribute class
 
+### `dragHandleRef`
+
+- optional
+- type: `React.Ref<API>`
+
+React Ref to a Drag Handle
+
 ## API
 
 ### `swipe([dir])`
