@@ -1,6 +1,6 @@
 const React = require('react')
 const { View, PanResponder, Dimensions } = require('react-native')
-const { useSpring, animated } = require('react-spring/native')
+const { useSpring, animated } = require('@react-spring/native')
 const { height, width } = Dimensions.get('window')
 
 const settings = {
@@ -207,7 +207,7 @@ const TinderCard = React.forwardRef(
           transform: [
             { translateX: x },
             { translateY: y },
-            { rotate: rot.interpolate((rot) => `${rot}deg`) }
+            { rotate: rot.to((rot) => `${rot}deg`) }
           ]
         }}
         className={className}
