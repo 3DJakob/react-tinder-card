@@ -81,6 +81,6 @@ declare interface Props {
   className?: string
 }
 
-declare const TinderCard: React.FC<Props>
+declare const TinderCard: React.FC<any>
 
 export = TinderCard
