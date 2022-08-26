@@ -129,6 +129,13 @@ Callback that will be executed when a `TinderCard` has unfulfilled the requireme
 
 HTML attribute class
 
+### `children`
+
+- optional
+- type: `React.ReactNode`
+
+The children passed in is what will be rendered as the actual Tinder-style card.
+
 ## API
 
 ### `swipe([dir])`
