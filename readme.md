@@ -28,10 +28,10 @@ npm install --save react-tinder-card
 
 ### React Native
 
-Additionally, if you are using React Native, you will need to install `react-spring` version 8.
+Additionally, if you are using React Native, you will need to install `react-spring` version 9.
 
 ```sh
-npm install --save "react-spring@^8.0.0"
+npm install --save "react-spring@^9.5.2"
 ```
 
 ## Usage

@@ -42,7 +42,7 @@ const animateOut = async (gesture, setSpringTarget) => {
   const finalRotation = gesture.x * 45
   const duration = diagonal / velocity
 
-  setSpringTarget({
+  setSpringTarget.current[0].start({
     x: finalX,
     y: finalY,
     rot: finalRotation, // set final rotation value based on gesture.vx
@@ -60,7 +60,7 @@ const animateOut = async (gesture, setSpringTarget) => {
 const animateBack = (setSpringTarget) => {
   // translate back to the initial position
   return new Promise((resolve) => {
-    setSpringTarget({ x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: resolve })
+    setSpringTarget.current[0].start({ x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: resolve })
   })
 }
 
@@ -162,7 +162,7 @@ const TinderCard = React.forwardRef(
           onPanResponderGrant: (evt, gestureState) => {
             // The gesture has started.
             // Probably wont need this anymore as postion i relative to swipe!
-            setSpringTarget({ x: gestureState.dx, y: gestureState.dy, rot: 0, config: physics.touchResponsive })
+            setSpringTarget.current[0].start({ x: gestureState.dx, y: gestureState.dy, rot: 0, config: physics.touchResponsive })
           },
           onPanResponderMove: (evt, gestureState) => {
             // Check fulfillment
@@ -185,7 +185,7 @@ const TinderCard = React.forwardRef(
             // translate element
             let rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
             rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
-            setSpringTarget({ x: gestureState.dx, y: gestureState.dy, rot, config: physics.touchResponsive })
+            setSpringTarget.current[0].start({ x: gestureState.dx, y: gestureState.dy, rot, config: physics.touchResponsive })
           },
           onPanResponderTerminationRequest: (evt, gestureState) => {
             return true
