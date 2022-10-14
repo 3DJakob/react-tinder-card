@@ -201,8 +201,17 @@ const TinderCard = React.forwardRef(
       []
     )
 
+    const element = React.useRef()
+
+    React.useLayoutEffect(() => {
+      element.current.addEventListener(('touchstart'), (ev) => {
+        ev.preventDefault()
+      })
+    })
+
     return (
       <AnimatedDiv
+        ref={element}
         {...panResponder.panHandlers}
         style={{
           transform: xyrot.to((x, y, rot) => `translate3d(${x}px, ${y}px, ${0}px) rotate(${rot}deg)`)
