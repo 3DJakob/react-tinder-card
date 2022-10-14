@@ -1,7 +1,5 @@
-// const { height, width } = Dimensions.get('window')
 const PanResponder = require('react-panresponder-web')
 const React = require('react')
-// const { View, PanResponder, Dimensions } = require('react-native')
 const { useSpring, animated } = require('@react-spring/web')
 
 const height = window.innerHeight
@@ -99,7 +97,7 @@ const TinderCard = React.forwardRef(
     settings.swipeThreshold = swipeThreshold
 
     React.useImperativeHandle(ref, () => ({
-      async swipe (dir = 'right') {
+      async swipe(dir = 'right') {
         if (onSwipe) onSwipe(dir)
         const power = 1.3
         const disturbance = (Math.random() - 0.5) / 2
@@ -114,7 +112,7 @@ const TinderCard = React.forwardRef(
         }
         if (onCardLeftScreen) onCardLeftScreen(dir)
       },
-      async restoreCard () {
+      async restoreCard() {
         await animateBack(setSpringTarget)
       }
     }))
