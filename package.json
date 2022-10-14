@@ -22,12 +22,7 @@
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "@react-spring/native": "^9.5.2"
-  },
-  "peerDependenciesMeta": {
-    "@react-spring/native": {
-      "optional": true
-    }
+    "react-spring": "^9.5.5"
   },
   "keywords": [
     "tinder",
