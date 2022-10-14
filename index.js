@@ -208,16 +208,15 @@ const TinderCard = React.forwardRef(
     })
 
     return (
-      <AnimatedDiv
-        ref={element}
-        {...panResponder.panHandlers}
-        style={{
+      React.createElement(AnimatedDiv, {
+        ref: element,
+        className,
+        ...panResponder.panHandlers,
+        style: {
           transform: xyrot.to((x, y, rot) => `translate3d(${x}px, ${y}px, ${0}px) rotate(${rot}deg)`)
-        }}
-        className={className}
-      >
-        {children}
-      </AnimatedDiv>
+        },
+        children
+      })
     )
   }
 )
