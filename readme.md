@@ -26,6 +26,18 @@ Want to contribute? Check out the [contributing.md](https://github.com/3DJakob/r
 npm install --save react-tinder-card
 ```
 
+### React
+If you are using React you will also need spring/web
+```sh
+npm install --save @react-spring/web@9.5.5
+```
+
+### React Native
+If you are using React Native you will also need spring/native
+```sh
+npm install --save @react-spring/native@9.5.5
+```
+
 ## Usage
 
 Import TinderCard and use the component like the snippet. Note that the component will not remove itself after swipe. If you want that behaviour implement that on the `onCardLeftScreen` callback. It is recommended to have `overflow: hidden` on your `#root` to prevent cards from being visible after they go of screen.
