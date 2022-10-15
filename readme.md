@@ -6,7 +6,7 @@ A react component to make swipeable elements like in the app tinder.
 - React
 - React Native
 
-The import and api is identical for both Web and Native.
+The installation, import and api is identical for both Web and Native.
 
 ## Demo
 ![](demo.gif)
@@ -26,12 +26,16 @@ Want to contribute? Check out the [contributing.md](https://github.com/3DJakob/r
 npm install --save react-tinder-card
 ```
 
-### React Native
-
-Additionally, if you are using React Native and npm below version 7, you will need to install `react-spring` version 9.
-
+### React
+If you are using React you will also need spring/web
 ```sh
-npm install --save @react-spring/native@^9.5.2
+npm install --save @react-spring/web@9.5.5
+```
+
+### React Native
+If you are using React Native you will also need spring/native
+```sh
+npm install --save @react-spring/native@9.5.5
 ```
 
 ## Usage
