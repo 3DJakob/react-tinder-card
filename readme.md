@@ -68,6 +68,10 @@ The advanced example implements a state to dynamically remove swiped elements as
 
 Both Web code examples can be tested on the [demo page.](https://3djakob.github.io/react-tinder-card-demo/) The Native code examples can be cloned and runned using `expo start`.
 
+## Buttons inside a TinderCard
+
+If you want a pressable element inside a TinderCard you will need to add  `className="pressable"` for it to work properly on mobile. This is because touchstart events are normally prevent defaulted to avoid scrolling the page when dragging cards around.
+
 ## Props
 
 ### `flickOnSwipe`

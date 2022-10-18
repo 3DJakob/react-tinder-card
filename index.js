@@ -203,7 +203,7 @@ const TinderCard = React.forwardRef(
 
     React.useLayoutEffect(() => {
       element.current.addEventListener(('touchstart'), (ev) => {
-        if (ev.srcElement.className.includes('card') && ev.cancelable) {
+        if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
           ev.preventDefault()
         }
       })
