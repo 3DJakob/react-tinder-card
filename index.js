@@ -150,8 +150,14 @@ const TinderCard = React.forwardRef(
     let swipeThresholdFulfilledDirection = 'none'
 
     const gestureStateFromWebEvent = (ev, startPositon, lastPosition, isTouch) => {
-      const dx = isTouch ? ev.touches[0].clientX - startPositon.x : ev.clientX - startPositon.x
-      const dy = isTouch ? ev.touches[0].clientY - startPositon.y : ev.clientY - startPositon.y
+      let dx = isTouch ? ev.touches[0].clientX - startPositon.x : ev.clientX - startPositon.x
+      let dy = isTouch ? ev.touches[0].clientY - startPositon.y : ev.clientY - startPositon.y
+
+      // We cant calculate velocity from the first event
+      if (startPositon.x === 0 && startPositon.y === 0) {
+        dx = 0
+        dy = 0
+      }
 
       const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
       const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
