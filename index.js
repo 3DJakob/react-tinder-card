@@ -149,9 +149,9 @@ const TinderCard = React.forwardRef(
 
     let swipeThresholdFulfilledDirection = 'none'
 
-    const gestureStateFromWebTouchEvent = (ev, startPositon, lastPosition) => {
-      const dx = ev.touches[0].clientX - startPositon.x
-      const dy = ev.touches[0].clientY - startPositon.y
+    const gestureStateFromWebEvent = (ev, startPositon, lastPosition, isTouch) => {
+      const dx = isTouch ? ev.touches[0].clientX - startPositon.x : ev.clientX - startPositon.x
+      const dy = isTouch ? ev.touches[0].clientY - startPositon.y : ev.clientY - startPositon.y
 
       const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
       const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
@@ -163,27 +163,26 @@ const TinderCard = React.forwardRef(
     React.useLayoutEffect(() => {
       let startPositon = { x: 0, y: 0 }
       let lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
+      let isClicking = false
 
       element.current.addEventListener(('touchstart'), (ev) => {
         if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
           ev.preventDefault()
         }
 
-        const gestureState = gestureStateFromWebTouchEvent(ev, startPositon, lastPosition)
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
         lastPosition = gestureState
-
         startPositon = { x: ev.touches[0].clientX, y: ev.touches[0].clientY }
       })
 
       element.current.addEventListener(('mousedown'), (ev) => {
-        // TODO
+        isClicking = true
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
+        lastPosition = gestureState
+        startPositon = { x: ev.clientX, y: ev.clientY }
       })
 
-      element.current.addEventListener(('touchmove'), (ev) => {
-        const gestureState = gestureStateFromWebTouchEvent(ev, startPositon, lastPosition)
-
-        lastPosition = gestureState
-
+      const handleMove = (gestureState) => {
         // Check fulfillment
         if (onSwipeRequirementFulfilled || onSwipeRequirementUnfulfilled) {
           const dir = getSwipeDirection({
@@ -202,9 +201,29 @@ const TinderCard = React.forwardRef(
 
         // use guestureState.vx / guestureState.vy for velocity calculations
         // translate element
-        let rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
+        let rot = gestureState.vx * 15 // Magic number 15 looks about right
         rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
         setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
+      }
+
+      window.addEventListener(('mousemove'), (ev) => {
+        if (!isClicking) return
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
+        lastPosition = gestureState
+        handleMove(gestureState)
+      })
+
+      window.addEventListener(('mouseup'), (ev) => {
+        isClicking = false
+        handleSwipeReleased(setSpringTarget, lastPosition)
+        startPositon = { x: 0, y: 0 }
+        lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
+      })
+
+      element.current.addEventListener(('touchmove'), (ev) => {
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
+        lastPosition = gestureState
+        handleMove(gestureState)
       })
 
       element.current.addEventListener(('touchend'), (ev) => {
