@@ -149,18 +149,27 @@ const TinderCard = React.forwardRef(
 
     let swipeThresholdFulfilledDirection = 'none'
 
+    const gestureStateFromWebTouchEvent = (ev, startPositon, lastPosition) => {
+      const dx = ev.touches[0].clientX - startPositon.x
+      const dy = ev.touches[0].clientY - startPositon.y
+
+      const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
+      const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
+
+      const gestureState = { dx, dy, vx, vy, timeStamp: Date.now() }
+      return gestureState
+    }
+
     React.useLayoutEffect(() => {
       let startPositon = { x: 0, y: 0 }
       let lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
 
       element.current.addEventListener(('touchstart'), (ev) => {
-        const dx = ev.touches[0].clientX - startPositon.x
-        const dy = ev.touches[0].clientY - startPositon.y
+        if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
+          ev.preventDefault()
+        }
 
-        const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
-        const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
-
-        const gestureState = { dx, dy, vx, vy, timeStamp: Date.now() }
+        const gestureState = gestureStateFromWebTouchEvent(ev, startPositon, lastPosition)
         lastPosition = gestureState
 
         startPositon = { x: ev.touches[0].clientX, y: ev.touches[0].clientY }
@@ -171,13 +180,7 @@ const TinderCard = React.forwardRef(
       })
 
       element.current.addEventListener(('touchmove'), (ev) => {
-        const dx = ev.touches[0].clientX - startPositon.x
-        const dy = ev.touches[0].clientY - startPositon.y
-
-        const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
-        const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
-
-        const gestureState = { dx, dy, vx, vy, timeStamp: Date.now() }
+        const gestureState = gestureStateFromWebTouchEvent(ev, startPositon, lastPosition)
 
         lastPosition = gestureState
 
@@ -212,14 +215,6 @@ const TinderCard = React.forwardRef(
     })
 
     const element = React.useRef()
-
-    React.useLayoutEffect(() => {
-      element.current.addEventListener(('touchstart'), (ev) => {
-        if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
-          ev.preventDefault()
-        }
-      })
-    })
 
     return (
       React.createElement(AnimatedDiv, {
