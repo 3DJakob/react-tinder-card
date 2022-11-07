@@ -220,6 +220,7 @@ const TinderCard = React.forwardRef(
       })
 
       window.addEventListener(('mouseup'), (ev) => {
+        if (!isClicking) return
         isClicking = false
         handleSwipeReleased(setSpringTarget, lastPosition)
         startPositon = { x: 0, y: 0 }
