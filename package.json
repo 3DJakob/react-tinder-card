@@ -13,8 +13,7 @@
     "test": "standard && ts-readme-generator --check"
   },
   "dependencies": {
-    "p-sleep": "^1.1.0",
-    "react-panresponder-web": "^1.0.2"
+    "p-sleep": "^1.1.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.51",

@@ -1,4 +1,3 @@
-const PanResponder = require('react-panresponder-web')
 const React = require('react')
 const { useSpring, animated } = require('@react-spring/web')
 
@@ -149,71 +148,104 @@ const TinderCard = React.forwardRef(
     )
 
     let swipeThresholdFulfilledDirection = 'none'
-    const panResponder = React.useMemo(
-      () =>
-        PanResponder.create({
-          // Ask to be the responder:
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
 
-          onPanResponderGrant: (evt, gestureState) => {
-            // The gesture has started.
-            // Probably wont need this anymore as postion i relative to swipe!
-            setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, 0], config: physics.touchResponsive })
-          },
-          onPanResponderMove: (evt, gestureState) => {
-            // Check fulfillment
-            if (onSwipeRequirementFulfilled || onSwipeRequirementUnfulfilled) {
-              const dir = getSwipeDirection({
-                x: swipeRequirementType === 'velocity' ? gestureState.vx : gestureState.dx,
-                y: swipeRequirementType === 'velocity' ? gestureState.vy : gestureState.dy
-              })
-              if (dir !== swipeThresholdFulfilledDirection) {
-                swipeThresholdFulfilledDirection = dir
-                if (swipeThresholdFulfilledDirection === 'none') {
-                  if (onSwipeRequirementUnfulfilled) onSwipeRequirementUnfulfilled()
-                } else {
-                  if (onSwipeRequirementFulfilled) onSwipeRequirementFulfilled(dir)
-                }
-              }
-            }
+    const gestureStateFromWebEvent = (ev, startPositon, lastPosition, isTouch) => {
+      let dx = isTouch ? ev.touches[0].clientX - startPositon.x : ev.clientX - startPositon.x
+      let dy = isTouch ? ev.touches[0].clientY - startPositon.y : ev.clientY - startPositon.y
 
-            // use guestureState.vx / guestureState.vy for velocity calculations
-            // translate element
-            let rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
-            rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
-            setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
-          },
-          onPanResponderTerminationRequest: (evt, gestureState) => {
-            return true
-          },
-          onPanResponderRelease: (evt, gestureState) => {
-            // The user has released all touches while this view is the
-            // responder. This typically means a gesture has succeeded
-            // enable
-            handleSwipeReleased(setSpringTarget, gestureState)
-          }
-        }),
-      []
-    )
+      // We cant calculate velocity from the first event
+      if (startPositon.x === 0 && startPositon.y === 0) {
+        dx = 0
+        dy = 0
+      }
 
-    const element = React.useRef()
+      const vx = -(dx - lastPosition.dx) / (lastPosition.timeStamp - Date.now())
+      const vy = -(dy - lastPosition.dy) / (lastPosition.timeStamp - Date.now())
+
+      const gestureState = { dx, dy, vx, vy, timeStamp: Date.now() }
+      return gestureState
+    }
 
     React.useLayoutEffect(() => {
+      let startPositon = { x: 0, y: 0 }
+      let lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
+      let isClicking = false
+
       element.current.addEventListener(('touchstart'), (ev) => {
         if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
           ev.preventDefault()
         }
+
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
+        lastPosition = gestureState
+        startPositon = { x: ev.touches[0].clientX, y: ev.touches[0].clientY }
+      })
+
+      element.current.addEventListener(('mousedown'), (ev) => {
+        isClicking = true
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
+        lastPosition = gestureState
+        startPositon = { x: ev.clientX, y: ev.clientY }
+      })
+
+      const handleMove = (gestureState) => {
+        // Check fulfillment
+        if (onSwipeRequirementFulfilled || onSwipeRequirementUnfulfilled) {
+          const dir = getSwipeDirection({
+            x: swipeRequirementType === 'velocity' ? gestureState.vx : gestureState.dx,
+            y: swipeRequirementType === 'velocity' ? gestureState.vy : gestureState.dy
+          })
+          if (dir !== swipeThresholdFulfilledDirection) {
+            swipeThresholdFulfilledDirection = dir
+            if (swipeThresholdFulfilledDirection === 'none') {
+              if (onSwipeRequirementUnfulfilled) onSwipeRequirementUnfulfilled()
+            } else {
+              if (onSwipeRequirementFulfilled) onSwipeRequirementFulfilled(dir)
+            }
+          }
+        }
+
+        // use guestureState.vx / guestureState.vy for velocity calculations
+        // translate element
+        let rot = gestureState.vx * 15 // Magic number 15 looks about right
+        rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
+        setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
+      }
+
+      window.addEventListener(('mousemove'), (ev) => {
+        if (!isClicking) return
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
+        lastPosition = gestureState
+        handleMove(gestureState)
+      })
+
+      window.addEventListener(('mouseup'), (ev) => {
+        if (!isClicking) return
+        isClicking = false
+        handleSwipeReleased(setSpringTarget, lastPosition)
+        startPositon = { x: 0, y: 0 }
+        lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
+      })
+
+      element.current.addEventListener(('touchmove'), (ev) => {
+        const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
+        lastPosition = gestureState
+        handleMove(gestureState)
+      })
+
+      element.current.addEventListener(('touchend'), (ev) => {
+        handleSwipeReleased(setSpringTarget, lastPosition)
+        startPositon = { x: 0, y: 0 }
+        lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
       })
     })
+
+    const element = React.useRef()
 
     return (
       React.createElement(AnimatedDiv, {
         ref: element,
         className,
-        ...panResponder.panHandlers,
         style: {
           transform: xyrot.to((x, y, rot) => `translate3d(${x}px, ${y}px, ${0}px) rotate(${rot}deg)`)
         },
