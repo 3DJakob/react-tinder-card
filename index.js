@@ -1,8 +1,28 @@
 const React = require('react')
 const { useSpring, animated } = require('@react-spring/web')
+const { useState, useEffect } = require('react')
 
-const height = window.innerHeight
-const width = window.innerWidth
+// this hook ensures that window size is only updated on the client and not on the server when using Next.js
+function useWindowSize () {
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined
+  })
+
+  useEffect(() => {
+    function handleResize () {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  return windowSize
+}
 
 const settings = {
   maxTilt: 25, // in deg
@@ -35,8 +55,8 @@ const normalize = (vector) => {
   return { x: vector.x / length, y: vector.y / length }
 }
 
-const animateOut = async (gesture, setSpringTarget) => {
-  const diagonal = pythagoras(height, width)
+const animateOut = async (gesture, setSpringTarget, windowHeight, windowWidth) => {
+  const diagonal = pythagoras(windowHeight, windowWidth)
   const velocity = pythagoras(gesture.x, gesture.y)
   const finalX = diagonal * gesture.x
   const finalY = diagonal * gesture.y
@@ -88,6 +108,8 @@ const TinderCard = React.forwardRef(
     { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
     ref
   ) => {
+    const { width, height } = useWindowSize()
+    console.log(width, height, 'width, height')
     const [{ xyrot }, setSpringTarget] = useSpring(() => ({
       xyrot: [0, 0, 0],
       config: physics.touchResponsive
@@ -101,13 +123,13 @@ const TinderCard = React.forwardRef(
         const power = 1.3
         const disturbance = (Math.random() - 0.5) / 2
         if (dir === 'right') {
-          await animateOut({ x: power, y: disturbance }, setSpringTarget)
+          await animateOut({ x: power, y: disturbance }, setSpringTarget, width, height)
         } else if (dir === 'left') {
-          await animateOut({ x: -power, y: disturbance }, setSpringTarget)
+          await animateOut({ x: -power, y: disturbance }, setSpringTarget, width, height)
         } else if (dir === 'up') {
-          await animateOut({ x: disturbance, y: power }, setSpringTarget)
+          await animateOut({ x: disturbance, y: power }, setSpringTarget, width, height)
         } else if (dir === 'down') {
-          await animateOut({ x: disturbance, y: -power }, setSpringTarget)
+          await animateOut({ x: disturbance, y: -power }, setSpringTarget, width, height)
         }
         if (onCardLeftScreen) onCardLeftScreen(dir)
       },
@@ -134,7 +156,7 @@ const TinderCard = React.forwardRef(
                 y: gesture.vy
               }) : (
                 normalize({ x: gesture.dx, y: gesture.dy }) // Normalize to avoid flicking the card away with super fast speed only direction is wanted here
-              ), setSpringTarget, swipeRequirementType)
+              ), setSpringTarget, width, height)
               if (onCardLeftScreen) onCardLeftScreen(dir)
               return
             }
