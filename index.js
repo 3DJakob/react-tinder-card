@@ -105,9 +105,9 @@ const TinderCard = React.forwardRef(
         } else if (dir === 'left') {
           await animateOut({ x: -power, y: disturbance }, setSpringTarget)
         } else if (dir === 'up') {
-          await animateOut({ x: disturbance, y: power }, setSpringTarget)
-        } else if (dir === 'down') {
           await animateOut({ x: disturbance, y: -power }, setSpringTarget)
+        } else if (dir === 'down') {
+          await animateOut({ x: disturbance, y: power }, setSpringTarget)
         }
         if (onCardLeftScreen) onCardLeftScreen(dir)
       },
