@@ -207,6 +207,7 @@ const TinderCard = React.forwardRef(
         // use guestureState.vx / guestureState.vy for velocity calculations
         // translate element
         let rot = gestureState.vx * 15 // Magic number 15 looks about right
+        if (isNaN(rot)) rot = 0
         rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
         setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
       }
