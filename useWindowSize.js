@@ -1,7 +1,7 @@
 const { useState, useEffect } = require('react')
 
 // this hook ensures that window size is only updated on the client and not on the server when using Next.js
-export default function useWindowSize () {
+function useWindowSize () {
   const [windowSize, setWindowSize] = useState({
     width: undefined,
     height: undefined
@@ -21,3 +21,5 @@ export default function useWindowSize () {
   }, [])
   return windowSize
 }
+
+module.exports = useWindowSize
