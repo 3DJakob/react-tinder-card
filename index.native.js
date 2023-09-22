@@ -154,10 +154,16 @@ const TinderCard = React.forwardRef(
       () =>
         PanResponder.create({
           // Ask to be the responder:
-          onStartShouldSetPanResponder: (evt, gestureState) => true,
-          onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-          onMoveShouldSetPanResponder: (evt, gestureState) => true,
-          onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+          onStartShouldSetPanResponder: (evt, gestureState) => false,
+          onStartShouldSetPanResponderCapture: (evt, gestureState) => false,
+          onMoveShouldSetPanResponder: (evt, gestureState) => {
+            const { dx, dy } = gestureState
+            return (dx > 2 || dx < -2 || dy > 2 || dy < -2)
+          },
+          onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+            const { dx, dy } = gestureState
+            return (dx > 2 || dx < -2 || dy > 2 || dy < -2)
+          },
 
           onPanResponderGrant: (evt, gestureState) => {
             // The gesture has started.
