@@ -1,28 +1,6 @@
 const React = require('react')
 const { useSpring, animated } = require('@react-spring/web')
-const { useState, useEffect } = require('react')
-
-// this hook ensures that window size is only updated on the client and not on the server when using Next.js
-function useWindowSize () {
-  const [windowSize, setWindowSize] = useState({
-    width: undefined,
-    height: undefined
-  })
-
-  useEffect(() => {
-    function handleResize () {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-  return windowSize
-}
+const useWindowSize = require('./useWindowSize')
 
 const settings = {
   maxTilt: 25, // in deg
@@ -109,7 +87,6 @@ const TinderCard = React.forwardRef(
     ref
   ) => {
     const { width, height } = useWindowSize()
-    console.log(width, height, 'width, height')
     const [{ xyrot }, setSpringTarget] = useSpring(() => ({
       xyrot: [0, 0, 0],
       config: physics.touchResponsive
