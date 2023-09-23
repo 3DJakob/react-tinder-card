@@ -171,7 +171,7 @@ const TinderCard = React.forwardRef(
       let isClicking = false
 
       element.current.addEventListener(('touchstart'), (ev) => {
-        if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
+        if (ev.target.getAttribute("class") && !ev.target.getAttribute("class").includes('pressable') && ev.cancelable) {
           ev.preventDefault()
         }
 
