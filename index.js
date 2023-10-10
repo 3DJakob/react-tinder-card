@@ -62,20 +62,14 @@ const animateBack = (setSpringTarget) => {
 }
 
 const getSwipeDirection = (property) => {
-  if (Math.abs(property.x) > Math.abs(property.y)) {
+  if (Math.abs(property.x) > settings.swipeThreshold) {
     if (property.x > settings.swipeThreshold) {
-      return 'right'
+      return 'right';
     } else if (property.x < -settings.swipeThreshold) {
-      return 'left'
-    }
-  } else {
-    if (property.y > settings.swipeThreshold) {
-      return 'down'
-    } else if (property.y < -settings.swipeThreshold) {
-      return 'up'
+      return 'left';
     }
   }
-  return 'none'
+  return 'none';
 }
 
 // must be created outside of the TinderCard forwardRef
@@ -95,25 +89,21 @@ const TinderCard = React.forwardRef(
     settings.swipeThreshold = swipeThreshold
 
     React.useImperativeHandle(ref, () => ({
-      async swipe (dir = 'right') {
-        if (onSwipe) onSwipe(dir)
-        const power = 1.3
-        const disturbance = (Math.random() - 0.5) / 2
+      async swipe(dir = 'right') {
+        if (onSwipe) onSwipe(dir);
+        const power = 1.3;
+        const disturbance = (Math.random() - 0.5) / 2;
         if (dir === 'right') {
-          await animateOut({ x: power, y: disturbance }, setSpringTarget, width, height)
+          await animateOut({ x: power, y: disturbance }, setSpringTarget, width, height);
         } else if (dir === 'left') {
-          await animateOut({ x: -power, y: disturbance }, setSpringTarget, width, height)
-        } else if (dir === 'up') {
-          await animateOut({ x: disturbance, y: -power }, setSpringTarget, width, height)
-        } else if (dir === 'down') {
-          await animateOut({ x: disturbance, y: power }, setSpringTarget, width, height)
+          await animateOut({ x: -power, y: disturbance }, setSpringTarget, width, height);
         }
-        if (onCardLeftScreen) onCardLeftScreen(dir)
+        if (onCardLeftScreen) onCardLeftScreen(dir);
       },
-      async restoreCard () {
-        await animateBack(setSpringTarget)
+      async restoreCard() {
+        await animateBack(setSpringTarget);
       }
-    }))
+    }));
 
     const handleSwipeReleased = React.useCallback(
       async (setSpringTarget, gesture) => {
