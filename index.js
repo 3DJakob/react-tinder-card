@@ -117,13 +117,7 @@ const TinderCard = React.forwardRef(
           if (flickOnSwipe) {
             if (!preventSwipe.includes(dir)) {
               if (onSwipe) onSwipe(dir)
-
-              await animateOut(swipeRequirementType === 'velocity' ? ({
-                x: gesture.vx,
-                y: gesture.vy
-              }) : (
-                normalize({ x: gesture.dx, y: gesture.dy }) // Normalize to avoid flicking the card away with super fast speed only direction is wanted here
-              ), setSpringTarget, width, height)
+              await ref.current.swipe(dir);
               if (onCardLeftScreen) onCardLeftScreen(dir)
               return
             }
