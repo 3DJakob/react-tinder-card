@@ -170,7 +170,7 @@ const TinderCard = React.forwardRef(
       let lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
       let isClicking = false
 
-      element.current.addEventListener(('touchstart'), (ev) => {
+      const onTouchStart = (ev) => {
         if (!ev.srcElement.className.includes('pressable') && ev.cancelable) {
           ev.preventDefault()
         }
@@ -178,14 +178,18 @@ const TinderCard = React.forwardRef(
         const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
         lastPosition = gestureState
         startPositon = { x: ev.touches[0].clientX, y: ev.touches[0].clientY }
-      })
+      }
 
-      element.current.addEventListener(('mousedown'), (ev) => {
+      element.current.addEventListener(('touchstart'), onTouchStart)
+
+      const onMouseDown = (ev) => {
         isClicking = true
         const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
         lastPosition = gestureState
         startPositon = { x: ev.clientX, y: ev.clientY }
-      })
+      }
+
+      element.current.addEventListener(('mousedown'), onMouseDown)
 
       const handleMove = (gestureState) => {
         // Check fulfillment
@@ -212,33 +216,50 @@ const TinderCard = React.forwardRef(
         setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
       }
 
-      window.addEventListener(('mousemove'), (ev) => {
+      const onMouseMove = (ev) => {
         if (!isClicking) return
         const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, false)
         lastPosition = gestureState
         handleMove(gestureState)
-      })
+      }
 
-      window.addEventListener(('mouseup'), (ev) => {
+      window.addEventListener(('mousemove'), onMouseMove)
+
+      const onMouseUp = (ev) => {
         if (!isClicking) return
         isClicking = false
         handleSwipeReleased(setSpringTarget, lastPosition)
         startPositon = { x: 0, y: 0 }
         lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
-      })
+      }
 
-      element.current.addEventListener(('touchmove'), (ev) => {
+      window.addEventListener(('mouseup'), onMouseUp)
+
+      const onTouchMove = (ev) => {
         const gestureState = gestureStateFromWebEvent(ev, startPositon, lastPosition, true)
         lastPosition = gestureState
         handleMove(gestureState)
-      })
+      }
 
-      element.current.addEventListener(('touchend'), (ev) => {
+      element.current.addEventListener(('touchmove'), onTouchMove)
+
+      const onTouchEnd = (ev) => {
         handleSwipeReleased(setSpringTarget, lastPosition)
         startPositon = { x: 0, y: 0 }
         lastPosition = { dx: 0, dy: 0, vx: 0, vy: 0, timeStamp: Date.now() }
-      })
-    })
+      }
+
+      element.current.addEventListener(('touchend'), onTouchEnd)
+
+      return () => {
+        element.current.removeEventListener(('touchstart'), onTouchStart)
+        element.current.removeEventListener(('touchmove'), onTouchMove)
+        element.current.removeEventListener(('touchend'), onTouchEnd)
+        window.removeEventListener(('mousemove'), onMouseMove)
+        window.removeEventListener(('mouseup'), onMouseUp)
+        element.current.removeEventListener(('mousedown'), onMouseDown)
+      }
+    }, [handleSwipeReleased, setSpringTarget, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled])
 
     const element = React.useRef()
 
