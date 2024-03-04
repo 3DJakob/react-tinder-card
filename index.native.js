@@ -22,6 +22,10 @@ const physics = {
   animateBack: {
     friction: 10,
     tension: 200
+  },
+  animateBackSlow: {
+    friction: 50,
+    tension: 200
   }
 }
 
@@ -57,13 +61,6 @@ const animateOut = async (gesture, setSpringTarget) => {
   )
 }
 
-const animateBack = (setSpringTarget) => {
-  // translate back to the initial position
-  return new Promise((resolve) => {
-    setSpringTarget.current[0].start({ x: 0, y: 0, rot: 0, config: physics.animateBack, onRest: resolve })
-  })
-}
-
 const getSwipeDirection = (property) => {
   if (Math.abs(property.x) > Math.abs(property.y)) {
     if (property.x > settings.swipeThreshold) {
@@ -86,7 +83,19 @@ const AnimatedView = animated(View)
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
+    {
+      flickOnSwipe = true,
+      slowBackAnimation = false,
+      children,
+      onSwipe,
+      onCardLeftScreen,
+      className,
+      preventSwipe = [],
+      swipeRequirementType = 'velocity',
+      swipeThreshold = settings.swipeThreshold,
+      onSwipeRequirementFulfilled,
+      onSwipeRequirementUnfulfilled
+    },
     ref
   ) => {
     const [{ x, y, rot }, setSpringTarget] = useSpring(() => ({
@@ -96,6 +105,19 @@ const TinderCard = React.forwardRef(
       config: physics.touchResponsive
     }))
     settings.swipeThreshold = swipeThreshold
+
+    const animateBack = (setSpringTarget) => {
+      // translate back to the initial position
+      return new Promise((resolve) => {
+        setSpringTarget.start({
+          xyrot: [0, 0, 0],
+          config: slowBackAnimation
+            ? physics.animateBackSlow
+            : physics.animateBack,
+          onRest: resolve
+        })
+      })
+    }
 
     React.useImperativeHandle(ref, () => ({
       async swipe (dir = 'right') {
