@@ -83,7 +83,7 @@ const AnimatedDiv = animated.div
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
+    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventMove = [], preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
     ref
   ) => {
     const { width, height } = useWindowSize()
@@ -213,7 +213,14 @@ const TinderCard = React.forwardRef(
         let rot = gestureState.vx * 15 // Magic number 15 looks about right
         if (isNaN(rot)) rot = 0
         rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
-        setSpringTarget.start({ xyrot: [gestureState.dx, gestureState.dy, rot], config: physics.touchResponsive })
+        setSpringTarget.start({
+          xyrot: [
+            preventMove.includes("xAxis") ? 0 : gestureState.dx,
+            preventMove.includes("yAxis") ? 0 : gestureState.dy,
+            rot,
+          ],
+          config: physics.touchResponsive,
+        })
       }
 
       const onMouseMove = (ev) => {
