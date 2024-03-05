@@ -41,6 +41,13 @@ declare interface Props {
   onCardLeftScreen?: CardLeftScreenHandler
 
   /**
+   * An array specifying the axes in which movement is prevented. Valid arguments are `'xAxis'`, `'yAxis'``.
+   *
+   * @default []
+   */
+  preventMove?: string[];
+
+  /**
    * An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
    *
    * @default []

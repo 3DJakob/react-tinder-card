@@ -86,7 +86,7 @@ const AnimatedView = animated(View)
 
 const TinderCard = React.forwardRef(
   (
-    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
+    { flickOnSwipe = true, children, onSwipe, onCardLeftScreen, className, preventMove = [], preventSwipe = [], swipeRequirementType = 'velocity', swipeThreshold = settings.swipeThreshold, onSwipeRequirementFulfilled, onSwipeRequirementUnfulfilled },
     ref
   ) => {
     const [{ x, y, rot }, setSpringTarget] = useSpring(() => ({
@@ -186,13 +186,23 @@ const TinderCard = React.forwardRef(
                 }
               }
             }
-
-            // use guestureState.vx / guestureState.vy for velocity calculations
+          
+            // Limit movement based on preventMove parameter
+            let newX = gestureState.dx;
+            let newY = gestureState.dy;
+          
+            if (preventMove === 'xAxis') {
+              newY = 0; // Block movement along the y-axis
+            } else if (preventMove === 'yAxis') {
+              newX = 0; // Block movement along the x-axis
+            }
+          
+            // use gestureState.vx / gestureState.vy for velocity calculations
             // translate element
-            let rot = ((300 * gestureState.vx) / width) * 15// Magic number 300 different on different devices? Run on physical device!
+            let rot = ((300 * gestureState.vx) / width) * 15 // Magic number 300 different on different devices? Run on physical device!
             rot = Math.max(Math.min(rot, settings.maxTilt), -settings.maxTilt)
-            setSpringTarget.current[0].start({ x: gestureState.dx, y: gestureState.dy, rot, config: physics.touchResponsive })
-          },
+            setSpringTarget.current[0].start({ x: newX, y: newY, rot, config: physics.touchResponsive })
+          },   
           onPanResponderTerminationRequest: (evt, gestureState) => {
             return true
           },

@@ -96,6 +96,14 @@ Callback that will be executed when a swipe has been completed. It will be calle
 
 Callback that will be executed when a `TinderCard` has left the screen. It will be called with a single string denoting which direction the swipe was in: `'left'`, `'right'`, `'up'` or `'down'`.
 
+### `preventMove`
+
+- optional
+- type: `Array<string>`
+- default: `[]`
+
+An array specifying the axes in which movement is prevented. Valid arguments are `'xAxis'`, `'yAxis'`.
+
 ### `preventSwipe`
 
 - optional
