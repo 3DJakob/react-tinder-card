@@ -104,6 +104,14 @@ Callback that will be executed when a `TinderCard` has left the screen. It will 
 
 An array of directions for which to prevent swiping out of screen. Valid arguments are `'left'`, `'right'`, `'up'` and `'down'`.
 
+### `backAnimationType`
+
+- optional
+- type: `string`
+- default: `standard`
+
+The card return animation type. Valid arguments are `'standard'`, `'slow'`, `'none'`.
+
 ### `swipeRequirementType`
 
 - optional
