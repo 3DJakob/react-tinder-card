@@ -23,9 +23,13 @@ const physics = {
     friction: 10,
     tension: 200
   },
-  animateBackSlow: {
+  animateSlow: {
     friction: 50,
     tension: 200
+  },
+  none: {
+    friction: 0,
+    tension: 0
   }
 }
 
@@ -85,7 +89,7 @@ const TinderCard = React.forwardRef(
   (
     {
       flickOnSwipe = true,
-      slowBackAnimation = false,
+      backAnimationType = 'standard',
       children,
       onSwipe,
       onCardLeftScreen,
@@ -106,14 +110,21 @@ const TinderCard = React.forwardRef(
     }))
     settings.swipeThreshold = swipeThreshold
 
+    const getBackAnimationType = () => {
+      if (backAnimationType == 'standard') {
+        return physics.animateBack;
+      } else if (backAnimationType == 'slow') {
+        return physics.animateSlow;
+      } 
+      return physics.none;
+    }
+
     const animateBack = (setSpringTarget) => {
       // translate back to the initial position
       return new Promise((resolve) => {
         setSpringTarget.start({
           xyrot: [0, 0, 0],
-          config: slowBackAnimation
-            ? physics.animateBackSlow
-            : physics.animateBack,
+          config: getBackAnimationType(),
           onRest: resolve
         })
       })

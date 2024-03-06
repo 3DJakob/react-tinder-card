@@ -48,11 +48,11 @@ declare interface Props {
   preventSwipe?: string[]
 
   /**
-   * The card return animation is slow.
+   * The card return animation type. Valid arguments are `'standard'`, `'slow'`, `'none'`.
    *
-   * @default false
+   * @default 'standard'
    */
-  slowBackAnimation?: boolean;
+  backAnimationType?: string;
 
   /**
    * What method to evaluate what direction to throw the card on release. 'velocity' will evaluate direction based on the direction of the swiping movement. 'position' will evaluate direction based on the position the card has on the screen like in the app tinder.
