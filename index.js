@@ -108,9 +108,9 @@ const TinderCard = React.forwardRef(
     settings.swipeThreshold = swipeThreshold
 
     const getBackAnimationType = () => {
-      if (backAnimationType == 'standard') {
+      if (backAnimationType === 'standard') {
         return physics.animateBack;
-      } else if (backAnimationType == 'slow') {
+      } else if (backAnimationType === 'slow') {
         return physics.animateSlow;
       } 
       return physics.none;
