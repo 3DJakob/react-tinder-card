@@ -24,7 +24,7 @@
   "peerDependencies": {
     "@react-spring/native": "^9.5.5",
     "@react-spring/web": "^9.5.5",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@react-spring/native": {
